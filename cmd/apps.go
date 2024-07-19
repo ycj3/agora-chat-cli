@@ -54,3 +54,7 @@ func appsCmd() *cobra.Command {
 
 	return cmd
 }
+
+func init() {
+	rootCmd.AddCommand(appsCmd())
+}
