@@ -45,13 +45,13 @@ func (c *Apps) Get(appID string) (*App, error) {
 
 func (c *Apps) GetActiveAppOrExplicit(cmd *cobra.Command) (*App, error) {
 	appID := c.Active
-	explicit, err := cmd.Flags().GetString("app")
-	if err != nil {
-		return nil, err
-	}
-	if explicit != "" {
-		appID = explicit
-	}
+	// explicit, err := cmd.Flags().GetString("app")
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// if explicit != "" {
+	// 	appID = explicit
+	// }
 
 	a, err := c.Get(appID)
 	if err != nil {
