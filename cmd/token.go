@@ -10,7 +10,7 @@ import (
 
 	"github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src/accesstoken2"
 	"github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src/chatTokenBuilder"
-	apps "github.com/CarlsonYuan/agora-chat-cli/apps"
+	"github.com/CarlsonYuan/agora-chat-cli/config"
 	"github.com/spf13/cobra"
 )
 
@@ -22,13 +22,13 @@ var tokenCmd = &cobra.Command{
 
 		expire := uint32(24 * 60 * 60)
 
-		active, err := apps.GetApps(cmd).GetActiveAppOrExplicit(cmd)
+		apps, _ := config.LoadConfig()
+		active, err := apps.GetActiveApp()
 		if err != nil {
 			return err
 		}
 
-		fapp, _ := cmd.Flags().GetBool("app")
-		if fapp {
+		if fapp, _ := cmd.Flags().GetBool("app"); fapp {
 			result, err := chatTokenBuilder.BuildChatAppToken(active.AppID, active.AppCertificate, expire)
 			if err != nil {
 				return err
@@ -37,8 +37,7 @@ var tokenCmd = &cobra.Command{
 			}
 		}
 
-		userID, _ := cmd.Flags().GetString("user")
-		if userID != "" {
+		if userID, _ := cmd.Flags().GetString("user"); userID != "" {
 			userToken, err := chatTokenBuilder.BuildChatUserToken(active.AppID, active.AppCertificate, userID, expire)
 			if err != nil {
 				return err
@@ -46,8 +45,7 @@ var tokenCmd = &cobra.Command{
 			cmd.Printf("Token for user [%s]:\n%s\n", userID, userToken)
 		}
 
-		token, _ := cmd.Flags().GetString("parse")
-		if token != "" {
+		if token, _ := cmd.Flags().GetString("parse"); token != "" {
 			version := token[:3]
 			if version != "007" {
 				cmd.PrintErrln("Not support, just for parsing token version 007!")
