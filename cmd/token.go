@@ -7,6 +7,7 @@ import (
 	"encoding/json"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src/accesstoken2"
 	"github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src/chatTokenBuilder"
@@ -20,7 +21,7 @@ var tokenCmd = &cobra.Command{
 	Short: "Generate and parse agora tokens",
 	RunE: func(cmd *cobra.Command, args []string) error {
 
-		expire := uint32(24 * 60 * 60)
+		expire := uint32(time.Now().Unix()) + (24 * 60 * 60)
 
 		apps, _ := config.LoadConfig()
 		active, err := apps.GetActiveApp()
