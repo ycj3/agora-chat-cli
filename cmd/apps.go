@@ -1,7 +1,7 @@
 package cmd
 
 import (
-	"github.com/CarlsonYuan/agora-chat-cli/config"
+	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
 	"github.com/spf13/cobra"
 )
 
@@ -10,7 +10,7 @@ func appsCmd() *cobra.Command {
 		Use:   "apps",
 		Short: "Manage all chat apps",
 		RunE: func(cmd *cobra.Command, args []string) error {
-			apps, _ := config.LoadConfig()
+			apps, _ := ac.LoadConfig()
 
 			flist, _ := cmd.Flags().GetBool("list")
 			if flist {

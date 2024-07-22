@@ -1,4 +1,4 @@
-package version
+package agora_chat
 
 import (
 	"fmt"

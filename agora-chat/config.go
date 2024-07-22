@@ -1,7 +1,7 @@
 /*
 Copyright © 2024 Carlson <carlsonyuandev@gmail.com>
 */
-package config
+package agora_chat
 
 import (
 	"fmt"

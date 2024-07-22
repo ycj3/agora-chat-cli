@@ -11,7 +11,7 @@ import (
 
 	"github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src/accesstoken2"
 	"github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src/chatTokenBuilder"
-	"github.com/CarlsonYuan/agora-chat-cli/config"
+	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
 	"github.com/spf13/cobra"
 )
 
@@ -23,7 +23,7 @@ var tokenCmd = &cobra.Command{
 
 		expire := uint32(time.Now().Unix()) + (24 * 60 * 60)
 
-		apps, _ := config.LoadConfig()
+		apps, _ := ac.LoadConfig()
 		active, err := apps.GetActiveApp()
 		if err != nil {
 			return err
