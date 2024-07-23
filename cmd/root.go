@@ -6,22 +6,19 @@ package cmd
 import (
 	"os"
 
-	"github.com/CarlsonYuan/agora-chat-cli/apps"
-	"github.com/CarlsonYuan/agora-chat-cli/version"
+	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 )
 
-var cfgPath = new(string)
-
 var rootCmd = &cobra.Command{
-	Use:   "agorachat <command> <subcommand> [flags]",
+	Use:   "agchat <command> <subcommand> [flags]",
 	Short: "Agora Chat CLI",
 	Long:  "Interact with your Agora Chat applications easily",
 	Example: heredoc.Doc(`
 
 	`),
-	Version: version.FmtVersion(),
+	Version: ac.FmtVersion(),
 }
 
 func Execute() {
@@ -33,5 +30,9 @@ func Execute() {
 }
 
 func init() {
-	cobra.OnInitialize(apps.GetInitConfig(rootCmd, cfgPath))
+	cobra.OnInitialize()
+
+	if _, err := ac.LoadConfig(); err != nil {
+		rootCmd.PrintErrf("Error loading config: %v\n", err)
+	}
 }
