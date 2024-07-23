@@ -33,3 +33,7 @@ func NewClient(appConfig *App) (*Client, error) {
 func (c *Client) Tokens() *TokenManager {
 	return &TokenManager{c}
 }
+
+func (c *Client) Push() *PushManager {
+	return &PushManager{c}
+}
