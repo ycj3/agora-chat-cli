@@ -4,56 +4,81 @@ Copyright © 2024 Carlson <carlsonyuandev@gmail.com>
 package agora_chat
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"net/http"
+
+	"github.com/CarlsonYuan/agora-chat-cli/http"
 )
 
 type PushManager struct {
 	client *Client
 }
 
-func (pm *PushManager) SendATestMessage(userID string, message map[string]interface{}) error {
+type response struct {
+	Timestamp int64 `json:"timestamp"`
+	Duration  int   `json:"duration"`
+}
 
-	url := pm.client.appConfig.BaseURL + "/push/sync/" + userID
+type pushSuccessResult struct {
+	Result string    `json:"result,omitempty"`
+	MsgID  *[]string `json:"msg_id,omitempty"`
+}
 
-	pushRequest := map[string]interface{}{
-		"strategy":    2,
-		"pushMessage": message,
-	}
+type pushResult struct {
+	PushStatus string             `json:"pushStatus"`
+	Data       *pushSuccessResult `json:"data,omitempty"`
+	Desc       *string            `json:"desc,omitempty"`
+}
+type pushResponseResult struct {
+	response
+	Data []pushResult `json:"data"`
+}
 
-	reqBody, err := json.Marshal(pushRequest)
+type pushStrategy int
+
+const (
+	PushPrividerFirstThenAgoraChat pushStrategy = iota // 0
+	OnlyAgoraChat                                      // 1
+	OnlyPushPrivider                                   // 2 (Default)
+	AgoraFirstThenPushPrivider                         // 3
+	OnlyOnlineAgoraChat                                // 4
+)
+
+type PushMessage struct {
+	Title    string `json:"title"`
+	Content  string `json:"content"`
+	SubTitle string `json:"sub_title"`
+}
+
+func (pm *PushManager) SyncPush(userID string, strategy pushStrategy, msg PushMessage) ([]pushResult, error) {
+
+	request := pm.syncPushRequest(userID, strategy, msg)
+	res, err := pm.client.pushClient.Send(request)
 	if err != nil {
-		return err
+		return nil, fmt.Errorf("request failed: %w", err)
 	}
+	return res.Data.Data, nil
+}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(reqBody))
-	if err != nil {
-		return fmt.Errorf("error creating request: %v", err)
+func (pm *PushManager) syncPushRequest(userID string, strategy pushStrategy, msg PushMessage) http.Request {
+
+	return http.Request{
+		URL:            pm.syncPushURL(userID),
+		Method:         http.MethodPOST,
+		ResponseFormat: http.ResponseFormatJSON,
+		Headers: map[string]string{
+			"Content-Type":  "application/json",
+			"Authorization": "Bearer " + pm.client.appToken,
+		},
+		Payload: &http.JSONPayload{
+			Content: map[string]interface{}{
+				"strategy":    strategy,
+				"pushMessage": msg,
+			},
+		},
 	}
+}
 
-	req.Header.Set("Authorization", "Bearer "+pm.client.appToken)
-	req.Header.Set("Content-Type", "application/json")
-
-	client := &http.Client{}
-	resp, err := client.Do(req)
-	if err != nil {
-		return fmt.Errorf("error sending request: %v", err)
-	}
-	defer resp.Body.Close()
-
-	var result map[string]interface{}
-	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
-		return err
-	}
-
-	prettyJSON, err := json.MarshalIndent(result, "", "  ")
-	if err != nil {
-		return fmt.Errorf("error formatting response: %v", err)
-	}
-
-	fmt.Printf("Response:\n%s\n", prettyJSON)
-
-	return nil
+func (pm *PushManager) syncPushURL(userID string) string {
+	baseURL := pm.client.appConfig.BaseURL
+	return fmt.Sprintf(baseURL+"/push/sync/"+"%s", userID)
 }

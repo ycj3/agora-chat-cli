@@ -22,35 +22,54 @@ var testPushCmd = &cobra.Command{
 	Short: "Test push notification",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		userID, _ := cmd.Flags().GetString("user")
-		message, _ := cmd.Flags().GetString("message")
-
-		var pushMessage map[string]interface{}
-
-		if err := json.Unmarshal([]byte(message), &pushMessage); err != nil {
-			return fmt.Errorf("failed to parse push message JSON: %v", err)
-		}
-
 		if userID == "" {
 			cmd.Println("Usage: agchat push test --user <user-id>")
 			return nil
 		}
 
-		apps, err := ac.LoadConfig()
-		if err != nil {
-			return err
+		message, _ := cmd.Flags().GetString("message")
+		var msg ac.PushMessage
+		if err := json.Unmarshal([]byte(message), &msg); err != nil {
+			return fmt.Errorf("failed to parse push message JSON: %v", err)
 		}
 
-		active, err := apps.GetActiveApp()
+		client := ac.NewClient()
+
+		res, err := client.Push().SyncPush(userID, ac.OnlyPushPrivider, msg)
 		if err != nil {
-			return err
+			return fmt.Errorf("failed to send push notification: %w", err)
 		}
 
-		client, err := ac.NewClient(active)
-		if err != nil {
-			return err
+		for _, pushResult := range res {
+			switch pushResult.PushStatus {
+			case "SUCCESS":
+				if pushResult.Data != nil {
+					cmd.Println("Success - PushSuccessResult:")
+					if pushResult.Data.Result != "" {
+						cmd.Printf("Result: %s\n", pushResult.Data.Result)
+					}
+					if pushResult.Data.MsgID != nil {
+						if len(*pushResult.Data.MsgID) > 0 {
+							cmd.Printf("MsgID: %+v\n", *pushResult.Data.MsgID)
+						} else {
+							cmd.Println("MsgID is empty")
+						}
+					} else {
+						cmd.Println("MsgID is nil")
+					}
+				} else {
+					cmd.Println("Success - Data is nil")
+				}
+			case "FAIL":
+				if pushResult.Desc != nil {
+					cmd.Printf("Failure - Desc: %s\n", *pushResult.Desc)
+				} else {
+					cmd.Println("Failure - No description provided")
+				}
+			default:
+				cmd.Println("Unknown pushStatus:", pushResult.PushStatus)
+			}
 		}
-		client.Push().SendATestMessage(userID, pushMessage)
-
 		return nil
 	},
 }

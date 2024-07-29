@@ -19,10 +19,6 @@ var tokenCmd = &cobra.Command{
 	Use:   "token",
 	Short: "Generate and parse agora tokens",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		apps, err := ac.LoadConfig()
-		if err != nil {
-			return err
-		}
 
 		if token, _ := cmd.Flags().GetString("parse"); token != "" {
 			tokenInfo, err := parseToken(token)
@@ -32,16 +28,7 @@ var tokenCmd = &cobra.Command{
 			cmd.Printf("Token information:\n%s\n", tokenInfo)
 		}
 
-		active, err := apps.GetActiveApp()
-		if err != nil {
-			return err
-		}
-
-		client, err := ac.NewClient(active)
-		if err != nil {
-			return err
-		}
-
+		client := ac.GetActiveApp().GetClient()
 		if userID, _ := cmd.Flags().GetString("user"); userID != "" {
 			userToken, err := client.Tokens().GenerateChatUserToken(userID)
 			if err != nil {

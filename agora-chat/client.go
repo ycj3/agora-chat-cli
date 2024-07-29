@@ -4,30 +4,31 @@ Copyright © 2024 Carlson <carlsonyuandev@gmail.com>
 package agora_chat
 
 import (
-	"net/http"
+	"fmt"
 	"time"
+
+	"github.com/CarlsonYuan/agora-chat-cli/http"
 )
 
 type Client struct {
 	appConfig   *App
 	appToken    string
 	appTokenExp uint32
-	httpClient  *http.Client
+	pushClient  http.Client[pushResponseResult]
 }
 
-func NewClient(appConfig *App) (*Client, error) {
+func NewClient() *Client {
 	client := &Client{
-		appConfig:  appConfig,
-		httpClient: &http.Client{},
+		appConfig:   GetActiveApp(),
+		pushClient:  http.NewClient[pushResponseResult](),
+		appTokenExp: uint32(time.Now().Unix()) + (24 * 60 * 60),
 	}
-	client.appTokenExp = uint32(time.Now().Unix()) + (24 * 60 * 60)
-
 	appToken, err := client.Tokens().generateChatAppToken()
 	if err != nil {
-		return nil, err
+		fmt.Printf("error generate app token")
 	}
 	client.appToken = appToken
-	return client, nil
+	return client
 }
 
 func (c *Client) Tokens() *TokenManager {
@@ -36,4 +37,8 @@ func (c *Client) Tokens() *TokenManager {
 
 func (c *Client) Push() *PushManager {
 	return &PushManager{c}
+}
+
+func (c *Client) Device() *DeviceManager {
+	return &DeviceManager{c}
 }

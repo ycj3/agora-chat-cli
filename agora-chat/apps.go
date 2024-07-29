@@ -12,15 +12,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-func (apps *Apps) GetActiveApp() (*App, error) {
-	for _, app := range apps.Apps {
-		if app.AppID == apps.Active {
-			return &app, nil
-		}
-	}
-	return nil, fmt.Errorf("active app %s not found", apps.Active)
-}
-
 func (apps *Apps) RunQuestionnaire() error {
 	var newApp App
 	err := survey.Ask(questions(), &newApp)
