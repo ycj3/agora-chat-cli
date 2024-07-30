@@ -5,6 +5,11 @@ go 1.20
 require github.com/spf13/cobra v1.8.1
 
 require (
+	github.com/cpuguy83/go-md2man/v2 v2.0.4 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+)
+
+require (
 	github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src v0.0.0-20240718124759-2392f77b89e1 // indirect
 	github.com/AlecAivazis/survey/v2 v2.3.7 // indirect
 	github.com/MakeNowJust/heredoc v1.0.0 // indirect
