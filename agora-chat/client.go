@@ -11,17 +11,19 @@ import (
 )
 
 type Client struct {
-	appConfig   *App
-	appToken    string
-	appTokenExp uint32
-	pushClient  http.Client[pushResponseResult]
+	appConfig    *App
+	appToken     string
+	appTokenExp  uint32
+	pushClient   http.Client[pushResponseResult]
+	deviceClient http.Client[deviceResponseResult]
 }
 
 func NewClient() *Client {
 	client := &Client{
-		appConfig:   GetActiveApp(),
-		pushClient:  http.NewClient[pushResponseResult](),
-		appTokenExp: uint32(time.Now().Unix()) + (24 * 60 * 60),
+		appConfig:    GetActiveApp(),
+		pushClient:   http.NewClient[pushResponseResult](),
+		deviceClient: http.NewClient[deviceResponseResult](),
+		appTokenExp:  uint32(time.Now().Unix()) + (24 * 60 * 60),
 	}
 	appToken, err := client.Tokens().generateChatAppToken()
 	if err != nil {

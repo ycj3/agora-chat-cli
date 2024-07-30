@@ -4,33 +4,92 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
+
 	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
 	"github.com/spf13/cobra"
 )
+
+var device ac.DeviceInfo
+
+func init() {
+
+	rootCmd.AddCommand(deviceCmd)
+	deviceCmd.PersistentFlags().StringP("user", "u", "", "the user ID of the target user")
+	deviceCmd.MarkPersistentFlagRequired("user")
+
+	deviceCmd.AddCommand(addDeviceCmd)
+	addDeviceCmd.Flags().StringVar(&device.DeviceID, "device-id", "", "Device ID")
+	addDeviceCmd.Flags().StringVar(&device.NotifierName, "notifier-name", "", "Notifier Name")
+	addDeviceCmd.Flags().StringVar(&device.DeviceToken, "device-token", "", "Device Token")
+	addDeviceCmd.MarkFlagRequired("device-id")
+	addDeviceCmd.MarkFlagRequired("notifier-name")
+	addDeviceCmd.MarkFlagRequired("device-token")
+
+	deviceCmd.AddCommand(removeDeviceCmd)
+	removeDeviceCmd.Flags().StringVar(&device.DeviceID, "device-id", "", "Device ID")
+	removeDeviceCmd.Flags().StringVar(&device.NotifierName, "notifier-name", "", "Notifier Name")
+	removeDeviceCmd.MarkFlagRequired("device-id")
+	removeDeviceCmd.MarkFlagRequired("notifier-name")
+
+	deviceCmd.AddCommand(listDevicesCmd)
+}
 
 var deviceCmd = &cobra.Command{
 	Use:   "device",
 	Short: "Manage device information bound to a user",
 }
 
-var listCmd = &cobra.Command{
-	Use:   "list",
-	Short: "List all device info",
+var addDeviceCmd = &cobra.Command{
+	Use:   "add",
+	Short: "Add a new device",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		userID, _ := cmd.Flags().GetString("user")
 
-		client := ac.GetActiveApp().GetClient()
-		client.Device().List(userID)
+		client := ac.NewClient()
+		devices, err := client.Device().AddPushDevice(userID, device.DeviceID, device.DeviceToken, device.NotifierName)
+		if err != nil {
+			return fmt.Errorf("failed to add device: %w", err)
+		}
+
+		for i, device := range devices {
+			cmd.Printf("Device %d: %+v\n", i+1, device)
+		}
 
 		return nil
 	},
 }
 
-func init() {
-	rootCmd.AddCommand(deviceCmd)
-	deviceCmd.AddCommand(listCmd)
+var removeDeviceCmd = &cobra.Command{
+	Use:   "remove",
+	Short: "Remove an existing device",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		userID, _ := cmd.Flags().GetString("user")
 
-	listCmd.Flags().StringP("user", "u", "", "the user ID of the target user")
-	listCmd.MarkFlagRequired("user")
+		client := ac.NewClient()
+		_, err := client.Device().RemovePushDevice(userID, device.DeviceID, device.NotifierName)
+		if err != nil {
+			return fmt.Errorf("failed to remove device: %w", err)
+		}
+		fmt.Printf("Removed Device with ID: %s\n", device.DeviceID)
+		return nil
+	},
+}
 
+var listDevicesCmd = &cobra.Command{
+	Use:   "list",
+	Short: "List all devices",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		userID, _ := cmd.Flags().GetString("user")
+
+		client := ac.NewClient()
+		devices, err := client.Device().ListPushDevice(userID)
+		if err != nil {
+			return fmt.Errorf("failed to list devices: %w", err)
+		}
+		for i, device := range devices {
+			fmt.Printf("Device %d: %+v\n", i+1, device)
+		}
+		return nil
+	},
 }

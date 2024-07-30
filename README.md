@@ -42,6 +42,13 @@ agchat version 0.0.1
 | `agchat token --user <user-id>`     | Generate a new user token for use in SDK APIs                         |
 | `agchat token --parse <token>`      | Parse an Agora token                                                  |
 
+### Push Device Management
+| Command                             | Description                                                           |
+|-------------------------------------|-----------------------------------------------------------------------|
+| `agchat device list --user <user-id>` | List all devices |
+| `agchat device add --user <user-id> --device-id <device-id> --device-token <device-token> --notifier-name <notifier-name>` | Add a new device |
+| `agchat device remove --user <user-id> --device-id <device-id> --notifier-name <notifier-name>` | Remove an existing device |
+
 ### Push Management
 | Command                             | Description                                                           |
 |-------------------------------------|-----------------------------------------------------------------------|

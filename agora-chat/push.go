@@ -13,11 +13,6 @@ type PushManager struct {
 	client *Client
 }
 
-type response struct {
-	Timestamp int64 `json:"timestamp"`
-	Duration  int   `json:"duration"`
-}
-
 type pushSuccessResult struct {
 	Result string    `json:"result,omitempty"`
 	MsgID  *[]string `json:"msg_id,omitempty"`
