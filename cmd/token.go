@@ -11,6 +11,7 @@ import (
 
 	"github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src/accesstoken2"
 	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
+	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 )
 
@@ -18,6 +19,39 @@ import (
 var tokenCmd = &cobra.Command{
 	Use:   "token",
 	Short: "Generate and parse agora tokens",
+	Example: heredoc.Doc(`
+	# Generate token for a specific user
+	$ agchat token --user <user-id>
+
+	# Parse an agora token
+	$ agchat token --parse <user-token>
+
+		#Service type
+			ServiceTypeRtc       = 1
+			ServiceTypeRtm       = 2
+			ServiceTypeFpa       = 4
+			ServiceTypeChat      = 5
+			ServiceTypeEducation = 7
+
+		#Rtc
+			PrivilegeJoinChannel        = 1
+			PrivilegePublishAudioStream = 2
+			PrivilegePublishVideoStream = 3
+			PrivilegePublishDataStream  = 4
+
+		#Rtm
+		#Fpa
+			PrivilegeLogin = 1
+
+		#Chat
+			PrivilegeChatUser = 1
+			PrivilegeChatApp  = 2
+
+		#Education
+			PrivilegeEducationRoomUser = 1
+			PrivilegeEducationUser     = 2
+			PrivilegeEducationApp      = 3
+	`),
 	RunE: func(cmd *cobra.Command, args []string) error {
 
 		if token, _ := cmd.Flags().GetString("parse"); token != "" {
@@ -25,7 +59,7 @@ var tokenCmd = &cobra.Command{
 			if err != nil {
 				return err
 			}
-			cmd.Printf("Token information:\n%s\n", tokenInfo)
+			cmd.Printf("Decoded Payload:\n%s\n", tokenInfo)
 		}
 
 		client := ac.NewClient()
@@ -34,7 +68,7 @@ var tokenCmd = &cobra.Command{
 			if err != nil {
 				return err
 			}
-			cmd.Printf("Token for user [%s]:\n%s\n", userID, userToken)
+			cmd.Printf("Generated token for user [%s]:\n%s\n", userID, userToken)
 		}
 		return nil
 	},
