@@ -7,7 +7,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/spf13/viper"
 )
@@ -67,19 +66,4 @@ func GetActiveApp() *App {
 	}
 	fmt.Printf("active app %s not found", apps.Active)
 	return nil
-}
-
-func (app *App) GetClient() *Client {
-	client := &Client{
-		appConfig: app,
-		// httpClient: &http.Client{},
-	}
-	client.appTokenExp = uint32(time.Now().Unix()) + (24 * 60 * 60)
-
-	appToken, err := client.Tokens().generateChatAppToken()
-	if err != nil {
-		fmt.Printf("error generate app token")
-	}
-	client.appToken = appToken
-	return client
 }

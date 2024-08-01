@@ -28,7 +28,7 @@ var tokenCmd = &cobra.Command{
 			cmd.Printf("Token information:\n%s\n", tokenInfo)
 		}
 
-		client := ac.GetActiveApp().GetClient()
+		client := ac.NewClient()
 		if userID, _ := cmd.Flags().GetString("user"); userID != "" {
 			userToken, err := client.Tokens().GenerateChatUserToken(userID)
 			if err != nil {

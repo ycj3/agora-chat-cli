@@ -23,7 +23,7 @@ func NewClient() *Client {
 		appConfig:    GetActiveApp(),
 		pushClient:   http.NewClient[pushResponseResult](),
 		deviceClient: http.NewClient[deviceResponseResult](),
-		appTokenExp:  uint32(time.Now().Unix()) + (24 * 60 * 60),
+		appTokenExp:  uint32(time.Hour.Seconds() * 24),
 	}
 	appToken, err := client.Tokens().generateChatAppToken()
 	if err != nil {
