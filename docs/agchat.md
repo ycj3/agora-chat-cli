@@ -27,4 +27,5 @@ Interact with your Agora Chat applications easily
 * [agchat doc](agchat_doc.md)	 - Generate markdown documentation for the CLI
 * [agchat push](agchat_push.md)	 - Manage push notifications
 * [agchat token](agchat_token.md)	 - Generate and parse agora tokens
+* [agchat user](agchat_user.md)	 - Manage various attributes and actions of a user
 

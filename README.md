@@ -55,6 +55,8 @@ agchat version 0.0.1
 | `agchat push test --user <user-id>` | Test push notification |
 
 
+**For more detailed documentation, please refer to [here](https://github.com/CarlsonYuan/agora-chat-cli/blob/main/docs/agchat.md).**
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.

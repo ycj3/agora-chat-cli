@@ -14,6 +14,7 @@ type Client struct {
 	appConfig    *App
 	appToken     string
 	appTokenExp  uint32
+	userClient   http.Client[userResponseResult]
 	pushClient   http.Client[pushResponseResult]
 	deviceClient http.Client[deviceResponseResult]
 }
@@ -21,6 +22,7 @@ type Client struct {
 func NewClient() *Client {
 	client := &Client{
 		appConfig:    GetActiveApp(),
+		userClient:   http.NewClient[userResponseResult](),
 		pushClient:   http.NewClient[pushResponseResult](),
 		deviceClient: http.NewClient[deviceResponseResult](),
 		appTokenExp:  uint32(time.Hour.Seconds() * 24),
@@ -35,6 +37,10 @@ func NewClient() *Client {
 
 func (c *Client) Tokens() *TokenManager {
 	return &TokenManager{c}
+}
+
+func (c *Client) User() *UserManager {
+	return &UserManager{c}
 }
 
 func (c *Client) Push() *PushManager {
