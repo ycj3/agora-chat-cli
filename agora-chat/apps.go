@@ -129,7 +129,7 @@ func questions() []*survey.Question {
 		{
 			Name: "BaseURL",
 			Prompt: &survey.Input{
-				Message: "What is your App Base URL?",
+				Message: "What is your App Base URL? (e.g., https://a61.chat.agora.io/61717166/1069763)",
 			},
 			Validate: func(ans interface{}) error {
 				u, ok := ans.(string)

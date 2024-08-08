@@ -9,10 +9,10 @@ agchat apps [flags]
 ### Options
 
 ```
-  -c, --create   create a new chat application
+  -c, --create   register an existing chat application using details from the Agora console
   -h, --help     help for apps
   -l, --list     list all chat applications
-  -r, --remove   Remove one or more application
+  -r, --remove   remove one or more application
       --use      set an active application for your working directory
 ```
 
