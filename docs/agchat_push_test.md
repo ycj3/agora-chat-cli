@@ -6,6 +6,14 @@ Test push notification
 agchat push test [flags]
 ```
 
+### Examples
+
+```
+# Send a test push notification for a specific user
+$ agchat push test --user <user-id>
+
+```
+
 ### Options
 
 ```
