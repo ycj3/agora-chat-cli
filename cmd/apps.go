@@ -48,8 +48,8 @@ func appsCmd() *cobra.Command {
 	}
 
 	cmd.Flags().BoolP("list", "l", false, "list all chat applications")
-	cmd.Flags().BoolP("create", "c", false, "create a new chat application")
-	cmd.Flags().BoolP("remove", "r", false, "Remove one or more application")
+	cmd.Flags().BoolP("create", "c", false, "register an existing chat application using details from the Agora console")
+	cmd.Flags().BoolP("remove", "r", false, "remove one or more application")
 	cmd.Flags().BoolP("use", "", false, "set an active application for your working directory")
 
 	return cmd
