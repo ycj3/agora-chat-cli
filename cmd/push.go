@@ -46,34 +46,25 @@ var testPushCmd = &cobra.Command{
 			return fmt.Errorf("failed to send push notification: %w", err)
 		}
 
-		for _, pushResult := range res {
+		for i, pushResult := range res {
+			i++
 			switch pushResult.PushStatus {
 			case "SUCCESS":
 				if pushResult.Data != nil {
-					cmd.Println("Success - PushSuccessResult:")
-					if pushResult.Data.Result != "" {
-						cmd.Printf("Result: %s\n", pushResult.Data.Result)
-					}
-					if pushResult.Data.MsgID != nil {
-						if len(*pushResult.Data.MsgID) > 0 {
-							cmd.Printf("MsgID: %+v\n", *pushResult.Data.MsgID)
-						} else {
-							cmd.Println("MsgID is empty")
-						}
-					} else {
-						cmd.Println("MsgID is nil")
+					if pushResult.Data != nil {
+						cmd.Printf("[%d] Success - Result from push provider(s)(Firebase/APN): %+v\n", i, pushResult.Data)
 					}
 				} else {
-					cmd.Println("Success - Data is nil")
+					cmd.Printf("[%d] Success - Data is nil", i)
 				}
 			case "FAIL":
 				if pushResult.Desc != nil {
-					cmd.Printf("Failure - Desc: %s\n", *pushResult.Desc)
+					cmd.Printf("[%d] Failure - Desc: %s\n", i, *pushResult.Desc)
 				} else {
-					cmd.Println("Failure - No description provided")
+					cmd.Printf("[%d] Failure - No description provided", i)
 				}
 			default:
-				cmd.Println("Unknown pushStatus:", pushResult.PushStatus)
+				cmd.Printf("[%d] Unknown pushStatus:%s", i, pushResult.PushStatus)
 			}
 		}
 		return nil

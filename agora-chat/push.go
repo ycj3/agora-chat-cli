@@ -13,15 +13,10 @@ type PushManager struct {
 	client *Client
 }
 
-type pushSuccessResult struct {
-	Result string    `json:"result,omitempty"`
-	MsgID  *[]string `json:"msg_id,omitempty"`
-}
-
 type pushResult struct {
-	PushStatus string             `json:"pushStatus"`
-	Data       *pushSuccessResult `json:"data,omitempty"`
-	Desc       *string            `json:"desc,omitempty"`
+	PushStatus string                 `json:"pushStatus"`
+	Data       map[string]interface{} `json:"data,omitempty"`
+	Desc       *string                `json:"desc,omitempty"`
 }
 type pushResponseResult struct {
 	response
