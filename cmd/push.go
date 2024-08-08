@@ -8,6 +8,7 @@ import (
 	"fmt"
 
 	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
+	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 )
 
@@ -20,6 +21,11 @@ var pushCmd = &cobra.Command{
 var testPushCmd = &cobra.Command{
 	Use:   "test",
 	Short: "Test push notification",
+	Example: heredoc.Doc(`
+		# Send a test push notification for a specific user
+		$ agchat push test --user <user-id>
+	`),
+
 	RunE: func(cmd *cobra.Command, args []string) error {
 		userID, _ := cmd.Flags().GetString("user")
 		if userID == "" {
