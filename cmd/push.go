@@ -52,19 +52,21 @@ var testPushCmd = &cobra.Command{
 			case "SUCCESS":
 				if pushResult.Data != nil {
 					if pushResult.Data != nil {
-						cmd.Printf("[%d] Success - Result from push provider(s)(Firebase/APN): %+v\n", i, pushResult.Data)
+						cmd.Printf("[Device %d] Success - Result from push provider(s)(Firebase/APN): %+v\n", i, pushResult.Data)
 					}
 				} else {
-					cmd.Printf("[%d] Success - Data is nil", i)
+					cmd.Printf("[Device %d] Success - Data is nil", i)
 				}
 			case "FAIL":
 				if pushResult.Desc != nil {
-					cmd.Printf("[%d] Failure - Desc: %s\n", i, *pushResult.Desc)
+					cmd.Printf("[Device %d] Failure - Desc: %s\n", i, *pushResult.Desc)
+				} else if pushResult.Data != nil {
+					cmd.Printf("[Device %d] Failure - Result from push provider(s)(Firebase/APN): %+v\n", i, pushResult.Data)
 				} else {
-					cmd.Printf("[%d] Failure - No description provided", i)
+					cmd.Printf("[Device %d] Failure - No description provided", i)
 				}
 			default:
-				cmd.Printf("[%d] Unknown pushStatus:%s", i, pushResult.PushStatus)
+				cmd.Printf("[Device %d] Unknown pushStatus:%s", i, pushResult.PushStatus)
 			}
 		}
 		return nil
