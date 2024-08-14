@@ -15,8 +15,9 @@ type PushManager struct {
 
 type pushResult struct {
 	PushStatus string                 `json:"pushStatus"`
-	Data       map[string]interface{} `json:"data,omitempty"`
-	Desc       *string                `json:"desc,omitempty"`
+	Data       map[string]interface{} `json:"data,omitempty"` // contains the response from the provider you are useing (e.g. FCM or APNs)
+	Desc       string                 `json:"desc,omitempty"`
+	StatusCode int                    `json:"statusCode,omitempty"`
 }
 type PushResponseResult struct {
 	Response

@@ -11,6 +11,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
+var (
+	verbose bool
+)
+
 var rootCmd = &cobra.Command{
 	Use:   "agchat <command> <subcommand> [flags]",
 	Short: "Agora Chat CLI",
@@ -31,7 +35,7 @@ func Execute() {
 
 func init() {
 	cobra.OnInitialize()
-
+	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose output")
 	if _, err := ac.LoadConfig(); err != nil {
 		rootCmd.PrintErrf("Error loading config: %v\n", err)
 	}

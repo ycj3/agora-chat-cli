@@ -47,29 +47,8 @@ var testPushCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("failed to send push notification: %w", err)
 		}
-		logger := log.NewLogger(true)
+		logger := log.NewLogger(verbose)
 		handlePushTestResponse(res, logger)
-		// for i, pushResult := range res {
-		// 	i++
-		// 	switch pushResult.PushStatus {
-		// 	case "SUCCESS":
-		// 		if pushResult.Data != nil {
-		// 			handlePushSuccessData(pushResult.Data)
-		// 		} else {
-		// 			cmd.Printf("[Device %d] Success - Data is nil", i)
-		// 		}
-		// 	case "FAIL":
-		// 		if pushResult.Desc != nil {
-		// 			cmd.Printf("[Device %d] Failure - Desc: %s\n", i, *pushResult.Desc)
-		// 		} else if pushResult.Data != nil {
-		// 			cmd.Printf("[Device %d] Failure - Result from push provider(s)(Firebase/APN): %+v\n", i, pushResult.Data)
-		// 		} else {
-		// 			cmd.Printf("[Device %d] Failure - No description provided", i)
-		// 		}
-		// 	default:
-		// 		cmd.Printf("[Device %d] Unknown pushStatus:%s", i, pushResult.PushStatus)
-		// 	}
-		// }
 		return nil
 	},
 }
@@ -77,22 +56,31 @@ var testPushCmd = &cobra.Command{
 func handlePushTestResponse(res ac.PushResponseResult, logger *log.Logger) {
 	for _, dataItem := range res.Data {
 		fields := map[string]interface{}{
-			"timestamp":  res.Timestamp,
-			"pushStatus": dataItem.PushStatus,
+			"timestamp": res.Timestamp,
 		}
-		if dataItem.PushStatus == "SUCCESS" && dataItem.Data != nil {
-			// fields["code"] = dataItem.Data.Code
-			// fields["requestId"] = dataItem.Data.Data.RequestID
-			// fields["sendResult"] = dataItem.Data.Data.SendResult
-			// fields["expireTokens"] = dataItem.Data.Data.ExpireTokens
-			// fields["failTokens"] = dataItem.Data.Data.FailTokens
-			// fields["message"] = dataItem.Data.Message
+
+		if dataItem.Data != nil {
+			jsonBytes, err := json.Marshal(dataItem.Data)
+			if err != nil {
+				logger.Error(fmt.Sprintf("Error marshalling map: %v", err), nil)
+			}
+			fields["data"] = fmt.Sprintf("the response body from FCM/APNS :%s", string(jsonBytes))
+		}
+
+		if dataItem.PushStatus == "SUCCESS" {
 			logger.Info("Push notification success", fields)
 		} else if dataItem.PushStatus == "FAIL" {
 			fields["description"] = dataItem.Desc
+			if dataItem.StatusCode > 0 {
+				fields["statusCode"] = dataItem.StatusCode
+			}
 			logger.Error("Push notification failed", fields)
 		}
 	}
+	toubleshootingMsg := "For more details, please refer to the response code documentation for the provider you are using: \n" +
+		"FCM: https://firebase.google.com/docs/reference/fcm/rest/v1/ErrorCode\n" +
+		"APNs :https://developer.apple.com/documentation/usernotifications/handling-notification-responses-from-apns"
+	logger.Verbose(toubleshootingMsg, nil)
 }
 
 func init() {
