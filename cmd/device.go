@@ -7,6 +7,7 @@ import (
 	"fmt"
 
 	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
+	"github.com/CarlsonYuan/agora-chat-cli/util"
 	"github.com/spf13/cobra"
 )
 
@@ -87,9 +88,12 @@ var listDevicesCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("failed to list devices: %w", err)
 		}
-		for i, device := range devices {
-			fmt.Printf("Device %d: %+v\n", i+1, device)
+
+		if len(devices) == 0 {
+			fmt.Println("no device registered")
+			return nil
 		}
+		util.OutputJson(devices)
 		return nil
 	},
 }
