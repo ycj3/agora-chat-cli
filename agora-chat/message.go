@@ -27,7 +27,7 @@ const (
 )
 
 type messageResponseResult struct {
-	response
+	Response
 	Path            string            `json:"path"`
 	URI             string            `json:"uri"`
 	Organization    string            `json:"organization"`

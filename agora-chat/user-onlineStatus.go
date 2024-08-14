@@ -18,7 +18,7 @@ type userOnlineStatus map[string]string
 
 type userResponseResult struct {
 	Error
-	response
+	Response
 	Data []userOnlineStatus `json:"data"`
 }
 

@@ -18,8 +18,8 @@ type pushResult struct {
 	Data       map[string]interface{} `json:"data,omitempty"`
 	Desc       *string                `json:"desc,omitempty"`
 }
-type pushResponseResult struct {
-	response
+type PushResponseResult struct {
+	Response
 	Data []pushResult `json:"data"`
 }
 
@@ -39,14 +39,14 @@ type PushMessage struct {
 	SubTitle string `json:"sub_title"`
 }
 
-func (pm *PushManager) SyncPush(userID string, strategy pushStrategy, msg PushMessage) ([]pushResult, error) {
+func (pm *PushManager) SyncPush(userID string, strategy pushStrategy, msg PushMessage) (PushResponseResult, error) {
 
 	request := pm.syncPushRequest(userID, strategy, msg)
 	res, err := pm.client.pushClient.Send(request)
 	if err != nil {
-		return nil, fmt.Errorf("request failed: %w", err)
+		return PushResponseResult{}, fmt.Errorf("request failed: %w", err)
 	}
-	return res.Data.Data, nil
+	return res.Data, nil
 }
 
 func (pm *PushManager) syncPushRequest(userID string, strategy pushStrategy, msg PushMessage) http.Request {

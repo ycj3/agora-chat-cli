@@ -20,7 +20,7 @@ type DeviceInfo struct {
 }
 
 type deviceResponseResult struct {
-	response
+	Response
 	Entities []DeviceInfo `json:"entities"`
 }
 
