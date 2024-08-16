@@ -37,6 +37,24 @@ var listCmd = &cobra.Command{
 	},
 }
 
+var deleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "delete the provider",
+	RunE: func(cmd *cobra.Command, args []string) error {
+		logger = log.NewLogger(verbose)
+		uuid, _ := cmd.Flags().GetString("uuid")
+		client := ac.NewClient()
+		res, err := client.Provider().DeletePushProvider(uuid)
+		if err != nil {
+			return fmt.Errorf("failed to delete the provider: %w", err)
+		}
+
+		msg := fmt.Sprintf("Push provider [%s] was deleted successfully", res.Entities[len(res.Entities)-1].Name)
+		logger.Info(msg, nil)
+		return nil
+	},
+}
+
 // APNS P8
 var apnsCmd = &cobra.Command{
 	Use:   "insert-apns",
@@ -136,6 +154,9 @@ var huaweiCmd = &cobra.Command{
 func init() {
 	pushCmd.AddCommand(provideCmd)
 	provideCmd.AddCommand(listCmd)
+
+	provideCmd.AddCommand(deleteCmd)
+	deleteCmd.Flags().StringP("uuid", "u", "", "the uuid of the provide")
 
 	// ANPS
 	provideCmd.AddCommand(apnsCmd)

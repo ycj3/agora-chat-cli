@@ -141,25 +141,45 @@ func (pp *ProviderManager) instertPushProvidersRequest(provider PushProvider) ht
 	}
 }
 
-// // DeletePushProvider deletes a push provider by uuid.
-// func (c *Client) DeletePushProvider(ctx context.Context, uuid string) (*PushProviderListResponse, error) {
-// 	var resp PushProviderListResponse
-// 	p := path.Join("notifiers", url.PathEscape(uuid))
-// 	err := c.makeRequest(ctx, http.MethodDelete, p, nil, nil, &resp)
-// 	return &resp, err
-// }
-
-// ListPushProviders returns the list of push providers.
-func (pp *ProviderManager) ListPushProviders() (PrividerResponseResult, error) {
-	req := pp.ListPushProvidersRequest()
+// DeletePushProvider deletes a push provider by uuid.
+func (pp *ProviderManager) DeletePushProvider(uuid string) (PrividerResponseResult, error) {
+	req := pp.deletePushProviderRequest(uuid)
 	res, err := pp.client.providerClient.Send(req)
 	if err != nil {
 		return PrividerResponseResult{}, fmt.Errorf("request failed: %w", err)
 	}
+	if res.StatusCode != gohttp.StatusOK {
+		return PrividerResponseResult{}, res.Data.Error
+	}
 	return res.Data, err
 }
 
-func (pp *ProviderManager) ListPushProvidersRequest() http.Request {
+func (pp *ProviderManager) deletePushProviderRequest(uuid string) http.Request {
+	return http.Request{
+		URL:            pp.providerURL() + "/" + uuid,
+		Method:         http.MethodDELETE,
+		ResponseFormat: http.ResponseFormatJSON,
+		Headers: map[string]string{
+			"Content-Type":  "application/json",
+			"Authorization": "Bearer " + pp.client.appToken,
+		},
+	}
+}
+
+// ListPushProviders returns the list of push providers.
+func (pp *ProviderManager) ListPushProviders() (PrividerResponseResult, error) {
+	req := pp.listPushProvidersRequest()
+	res, err := pp.client.providerClient.Send(req)
+	if err != nil {
+		return PrividerResponseResult{}, fmt.Errorf("request failed: %w", err)
+	}
+	if res.StatusCode != gohttp.StatusOK {
+		return PrividerResponseResult{}, res.Data.Error
+	}
+	return res.Data, err
+}
+
+func (pp *ProviderManager) listPushProvidersRequest() http.Request {
 
 	return http.Request{
 		URL:            pp.providerURL(),
