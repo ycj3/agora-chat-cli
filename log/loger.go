@@ -62,3 +62,13 @@ func (l *Logger) Verbose(message string, fields map[string]interface{}) {
 		event.Msg(message)
 	}
 }
+
+// Fatal logs a fatal message and exits the program
+func (l *Logger) Fatal(message string, fields map[string]interface{}) {
+	event := l.logger.Fatal()
+	for k, v := range fields {
+		event.Interface(k, v)
+	}
+	event.Msg(message)
+	os.Exit(1) // Exit with status code 1 to indicate an error
+}

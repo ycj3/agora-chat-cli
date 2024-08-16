@@ -11,23 +11,25 @@ import (
 )
 
 type Client struct {
-	appConfig     *App
-	appToken      string
-	appTokenExp   uint32
-	messageClient http.Client[messageResponseResult]
-	userClient    http.Client[userResponseResult]
-	pushClient    http.Client[PushResponseResult]
-	deviceClient  http.Client[deviceResponseResult]
+	appConfig      *App
+	appToken       string
+	appTokenExp    uint32
+	messageClient  http.Client[messageResponseResult]
+	userClient     http.Client[userResponseResult]
+	pushClient     http.Client[PushResponseResult]
+	providerClient http.Client[PrividerResponseResult]
+	deviceClient   http.Client[deviceResponseResult]
 }
 
 func NewClient() *Client {
 	client := &Client{
-		appConfig:     GetActiveApp(),
-		messageClient: http.NewClient[messageResponseResult](),
-		userClient:    http.NewClient[userResponseResult](),
-		pushClient:    http.NewClient[PushResponseResult](),
-		deviceClient:  http.NewClient[deviceResponseResult](),
-		appTokenExp:   uint32(time.Hour.Seconds() * 24),
+		appConfig:      GetActiveApp(),
+		messageClient:  http.NewClient[messageResponseResult](),
+		userClient:     http.NewClient[userResponseResult](),
+		pushClient:     http.NewClient[PushResponseResult](),
+		providerClient: http.NewClient[PrividerResponseResult](),
+		deviceClient:   http.NewClient[deviceResponseResult](),
+		appTokenExp:    uint32(time.Hour.Seconds() * 24),
 	}
 	appToken, err := client.Tokens().generateChatAppToken()
 	if err != nil {
@@ -47,6 +49,10 @@ func (c *Client) User() *UserManager {
 
 func (c *Client) Push() *PushManager {
 	return &PushManager{c}
+}
+
+func (c *Client) Provider() *ProviderManager {
+	return &ProviderManager{c}
 }
 
 func (c *Client) Device() *DeviceManager {
