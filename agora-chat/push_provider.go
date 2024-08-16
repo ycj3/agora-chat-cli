@@ -5,6 +5,7 @@ package agora_chat
 
 import (
 	"fmt"
+	gohttp "net/http"
 
 	"github.com/CarlsonYuan/agora-chat-cli/http"
 )
@@ -14,6 +15,7 @@ type ProviderManager struct {
 }
 
 type PrividerResponseResult struct {
+	Error
 	Response
 	Entities []PushProvider `json:"entities"`
 }
@@ -88,13 +90,56 @@ type PushProvider struct {
 	OppoPushSettings   *OppoConfig   `json:"oppoPushSettings,omitempty"`
 }
 
-// // InsertPushProvider inserts a push provider.
-// func (c *Client) InsertPushProvider(ctx context.Context, provider *PushProvider) (*PushProviderListResponse, error) {
-// 	body := provider
-// 	var resp PushProviderListResponse
-// 	err := c.makeRequest(ctx, http.MethodPost, "notifiers", nil, body, &resp)
-// 	return &resp, err
-// }
+func (pp *ProviderManager) InsertPushProvider(provider PushProvider) (PrividerResponseResult, error) {
+	req := pp.instertPushProvidersRequest(provider)
+	res, err := pp.client.providerClient.Send(req)
+	if err != nil {
+		return PrividerResponseResult{}, fmt.Errorf("request failed: %w", err)
+	}
+	if res.StatusCode != gohttp.StatusOK {
+		return PrividerResponseResult{}, res.Data.Error
+	}
+	return res.Data, err
+}
+
+func (pp *ProviderManager) instertPushProvidersRequest(provider PushProvider) http.Request {
+	// Build the payload based on the provider type
+	content := map[string]interface{}{
+		"provider":    provider.Type,
+		"name":        provider.Name,
+		"environment": provider.Env,
+		"certificate": provider.Certificate,
+		"packageName": provider.PackageName,
+	}
+
+	// Add provider-specific settings to the payload
+	switch provider.Type {
+	case PushProviderAPNS:
+		if provider.ApnsPushSettings != nil {
+			content["apnsPushSettings"] = provider.ApnsPushSettings
+		}
+	case PushProviderFCM:
+		if provider.FcmPushSettings != nil {
+			content["googlePushSettings"] = provider.FcmPushSettings
+		}
+	case PushProviderHuaWei:
+		if provider.HuaweiPushSettings != nil {
+			content["huaweiPushSettings"] = provider.HuaweiPushSettings
+		}
+		// Add cases for other provider types as needed
+	}
+
+	return http.Request{
+		URL:            pp.providerURL(),
+		Method:         http.MethodPOST,
+		ResponseFormat: http.ResponseFormatJSON,
+		Headers: map[string]string{
+			"Content-Type":  "application/json",
+			"Authorization": "Bearer " + pp.client.appToken,
+		},
+		Payload: &http.JSONPayload{Content: content},
+	}
+}
 
 // // DeletePushProvider deletes a push provider by uuid.
 // func (c *Client) DeletePushProvider(ctx context.Context, uuid string) (*PushProviderListResponse, error) {
@@ -102,11 +147,6 @@ type PushProvider struct {
 // 	p := path.Join("notifiers", url.PathEscape(uuid))
 // 	err := c.makeRequest(ctx, http.MethodDelete, p, nil, nil, &resp)
 // 	return &resp, err
-// }
-
-// type PushProviderListResponse struct {
-// 	Response
-// 	PushProviders []PushProvider `json:"entities"`
 // }
 
 // ListPushProviders returns the list of push providers.
@@ -118,6 +158,7 @@ func (pp *ProviderManager) ListPushProviders() (PrividerResponseResult, error) {
 	}
 	return res.Data, err
 }
+
 func (pp *ProviderManager) ListPushProvidersRequest() http.Request {
 
 	return http.Request{
