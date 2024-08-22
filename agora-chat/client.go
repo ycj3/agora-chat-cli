@@ -10,6 +10,7 @@ import (
 	"github.com/CarlsonYuan/agora-chat-cli/http"
 )
 
+//go:generate go run go.uber.org/mock/mockgen -source=client.go -destination=client_mock.go -package=agora_chat
 type Client interface {
 	Tokens() *TokenManager
 	User() *UserManager

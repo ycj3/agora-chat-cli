@@ -8,7 +8,7 @@ const (
 	versionMajor      = 0
 	versionMinor      = 1
 	versionPatch      = 0
-	versionPreRelease = "alpha"
+	versionPreRelease = "beta"
 )
 
 func FmtVersion() string {

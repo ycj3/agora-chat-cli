@@ -18,7 +18,7 @@ $ go build -o agchat main.go
 * Run the command:
 ```
 $ ./agchat --version
-agchat version 0.0.1
+agchat version 0.1.0-beta
 ```
 
 ## Commands
