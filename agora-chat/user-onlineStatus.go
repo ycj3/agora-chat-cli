@@ -11,7 +11,7 @@ import (
 )
 
 type UserManager struct {
-	client *Client
+	client *client
 }
 
 type userOnlineStatus map[string]string

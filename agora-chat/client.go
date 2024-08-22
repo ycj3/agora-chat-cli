@@ -10,7 +10,16 @@ import (
 	"github.com/CarlsonYuan/agora-chat-cli/http"
 )
 
-type Client struct {
+type Client interface {
+	Tokens() *TokenManager
+	User() *UserManager
+	Push() *PushManager
+	Provider() *ProviderManager
+	Device() *DeviceManager
+	Message() *MessageManager
+}
+
+type client struct {
 	appConfig      *App
 	appToken       string
 	appTokenExp    uint32
@@ -21,8 +30,8 @@ type Client struct {
 	deviceClient   http.Client[deviceResponseResult]
 }
 
-func NewClient() *Client {
-	client := &Client{
+func NewClient() Client {
+	client := &client{
 		appConfig:      GetActiveApp(),
 		messageClient:  http.NewClient[messageResponseResult](),
 		userClient:     http.NewClient[userResponseResult](),
@@ -39,26 +48,26 @@ func NewClient() *Client {
 	return client
 }
 
-func (c *Client) Tokens() *TokenManager {
+func (c *client) Tokens() *TokenManager {
 	return &TokenManager{c}
 }
 
-func (c *Client) User() *UserManager {
+func (c *client) User() *UserManager {
 	return &UserManager{c}
 }
 
-func (c *Client) Push() *PushManager {
+func (c *client) Push() *PushManager {
 	return &PushManager{c}
 }
 
-func (c *Client) Provider() *ProviderManager {
+func (c *client) Provider() *ProviderManager {
 	return &ProviderManager{c}
 }
 
-func (c *Client) Device() *DeviceManager {
+func (c *client) Device() *DeviceManager {
 	return &DeviceManager{c}
 }
 
-func (c *Client) Message() *MessageManager {
+func (c *client) Message() *MessageManager {
 	return &MessageManager{c}
 }

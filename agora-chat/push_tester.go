@@ -10,7 +10,7 @@ import (
 )
 
 type PushManager struct {
-	client *Client
+	client *client
 }
 
 type pushResult struct {

@@ -10,7 +10,7 @@ import (
 )
 
 type DeviceManager struct {
-	client *Client
+	client *client
 }
 
 type DeviceInfo struct {
