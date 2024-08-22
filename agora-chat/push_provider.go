@@ -11,7 +11,7 @@ import (
 )
 
 type ProviderManager struct {
-	client *Client
+	client *client
 }
 
 type PrividerResponseResult struct {

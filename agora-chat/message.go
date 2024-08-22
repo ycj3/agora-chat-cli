@@ -10,7 +10,7 @@ import (
 )
 
 type MessageManager struct {
-	client *Client
+	client *client
 }
 
 type MessageType string

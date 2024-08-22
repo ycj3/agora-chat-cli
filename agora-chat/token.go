@@ -8,11 +8,7 @@ import (
 )
 
 type TokenManager struct {
-	client *Client
-}
-
-func NewTokenManager(client *Client) *TokenManager {
-	return &TokenManager{client: client}
+	client *client
 }
 
 func (tm *TokenManager) generateChatAppToken() (string, error) {
