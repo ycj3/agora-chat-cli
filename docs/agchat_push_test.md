@@ -22,6 +22,12 @@ $ agchat push test --user <user-id>
   -u, --user string      the user ID of the target user
 ```
 
+### Options inherited from parent commands
+
+```
+  -v, --verbose   enable verbose output
+```
+
 ### SEE ALSO
 
 * [agchat push](agchat_push.md)	 - Manage push notifications

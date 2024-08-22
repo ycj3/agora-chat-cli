@@ -16,6 +16,12 @@ agchat apps [flags]
       --use      set an active application for your working directory
 ```
 
+### Options inherited from parent commands
+
+```
+  -v, --verbose   enable verbose output
+```
+
 ### SEE ALSO
 
 * [agchat](agchat.md)	 - Agora Chat CLI

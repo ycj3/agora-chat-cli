@@ -17,7 +17,13 @@ agchat log upload [flags]
       --users string   Comma-separated list of users to send a upload command to the online users for
 ```
 
+### Options inherited from parent commands
+
+```
+  -v, --verbose   enable verbose output
+```
+
 ### SEE ALSO
 
-* [agchat log](agchat_log.md)	 - Manage Chat SDK log file of a user
+* [agchat log](agchat_log.md)	 - Manage Chat SDK logs of a user
 

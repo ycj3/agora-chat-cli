@@ -17,6 +17,12 @@ agchat user online-status [flags]
       --users string   Comma-separated list of users to query the online status for
 ```
 
+### Options inherited from parent commands
+
+```
+  -v, --verbose   enable verbose output
+```
+
 ### SEE ALSO
 
 * [agchat user](agchat_user.md)	 - Manage various attributes and actions of a user

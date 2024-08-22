@@ -1,11 +1,17 @@
 ## agchat log
 
-Manage Chat SDK log file of a user
+Manage Chat SDK logs of a user
 
 ### Options
 
 ```
   -h, --help   help for log
+```
+
+### Options inherited from parent commands
+
+```
+  -v, --verbose   enable verbose output
 ```
 
 ### SEE ALSO

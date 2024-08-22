@@ -8,6 +8,12 @@ Manage various attributes and actions of a user
   -h, --help   help for user
 ```
 
+### Options inherited from parent commands
+
+```
+  -v, --verbose   enable verbose output
+```
+
 ### SEE ALSO
 
 * [agchat](agchat.md)	 - Agora Chat CLI

@@ -9,6 +9,12 @@ Manage device information bound to a user
   -u, --user string   the user ID of the target user
 ```
 
+### Options inherited from parent commands
+
+```
+  -v, --verbose   enable verbose output
+```
+
 ### SEE ALSO
 
 * [agchat](agchat.md)	 - Agora Chat CLI

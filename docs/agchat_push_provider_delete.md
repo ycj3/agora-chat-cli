@@ -1,15 +1,16 @@
-## agchat push
+## agchat push provider delete
 
-Manage push notifications
+delete the provider
 
-### Synopsis
-
-Commands to manage push notifications.
+```
+agchat push provider delete [flags]
+```
 
 ### Options
 
 ```
-  -h, --help   help for push
+  -h, --help          help for delete
+  -u, --uuid string   the uuid of the provide
 ```
 
 ### Options inherited from parent commands
@@ -20,7 +21,5 @@ Commands to manage push notifications.
 
 ### SEE ALSO
 
-* [agchat](agchat.md)	 - Agora Chat CLI
 * [agchat push provider](agchat_push_provider.md)	 - Manage push providers added to an application
-* [agchat push test](agchat_push_test.md)	 - Test push notification
 

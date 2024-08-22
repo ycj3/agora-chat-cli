@@ -16,6 +16,7 @@ agchat device list [flags]
 
 ```
   -u, --user string   the user ID of the target user
+  -v, --verbose       enable verbose output
 ```
 
 ### SEE ALSO

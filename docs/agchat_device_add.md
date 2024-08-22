@@ -19,6 +19,7 @@ agchat device add [flags]
 
 ```
   -u, --user string   the user ID of the target user
+  -v, --verbose       enable verbose output
 ```
 
 ### SEE ALSO

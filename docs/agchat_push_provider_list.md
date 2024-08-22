@@ -1,15 +1,15 @@
-## agchat push
+## agchat push provider list
 
-Manage push notifications
+list all providers
 
-### Synopsis
-
-Commands to manage push notifications.
+```
+agchat push provider list [flags]
+```
 
 ### Options
 
 ```
-  -h, --help   help for push
+  -h, --help   help for list
 ```
 
 ### Options inherited from parent commands
@@ -20,7 +20,5 @@ Commands to manage push notifications.
 
 ### SEE ALSO
 
-* [agchat](agchat.md)	 - Agora Chat CLI
 * [agchat push provider](agchat_push_provider.md)	 - Manage push providers added to an application
-* [agchat push test](agchat_push_test.md)	 - Test push notification
 
