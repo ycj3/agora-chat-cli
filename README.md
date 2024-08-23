@@ -1,13 +1,13 @@
 # Agora Chat CLI
 
-`agora-chat-cli` is a command-line interface (CLI) tool for managing Agora chat applications.
+`agchat` is a command-line interface (CLI) tool for managing Agora chat applications.
 
 - [Installation](#installation)
 - [Commands](#commands)
 
 ## Installation
-
-* To install the CLI, clone the repository and build the project:
+### Manual
+To install the CLI, clone the repository and build the project:
 
 ```sh
 $ git clone https://github.com/CarlsonYuan/agora-chat-cli.git
@@ -15,10 +15,18 @@ $ cd agora-chat-cli
 $ go build -o agchat main.go
 ```
 
-* Run the command:
+Run the command:
 ```
 $ ./agchat --version
 agchat version 0.1.0-beta
+```
+
+### Package Manager (macOS)
+You can install `agchat` using [Homebrew](https://brew.sh/).
+
+```
+brew tap CarlsonYuan/agora-chat-cli https://github.com/CarlsonYuan/agora-chat-cli
+brew install agchat
 ```
 
 ## Commands
