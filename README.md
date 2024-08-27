@@ -56,6 +56,9 @@ Examples:
 # Generate token for a specific user
 $ agchat token --user <user-id>
 
+# Generate application token
+$ agchat token --app
+
 # Parse an agora token
 $ agchat token --parse <user-token>
 
@@ -87,9 +90,13 @@ $ agchat token --parse <user-token>
 
 
 Flags:
+  -a, --app            generate a new app token for use in RESTful APIs
   -h, --help           help for token
   -p, --parse string   parse an agora token
   -u, --user string    generate a new user token for use in SDK APIs
+
+Global Flags:
+  -v, --verbose   enable verbose output
 ```
 
 * Push Device Management

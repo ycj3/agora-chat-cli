@@ -11,7 +11,7 @@ type TokenManager struct {
 	client *client
 }
 
-func (tm *TokenManager) generateChatAppToken() (string, error) {
+func (tm *TokenManager) GenerateChatAppToken() (string, error) {
 	return chatTokenBuilder.BuildChatAppToken(tm.client.appConfig.AppID, tm.client.appConfig.AppCertificate, tm.client.appTokenExp)
 }
 

@@ -23,6 +23,9 @@ var tokenCmd = &cobra.Command{
 	# Generate token for a specific user
 	$ agchat token --user <user-id>
 
+	# Generate application token
+	$ agchat token --app
+
 	# Parse an agora token
 	$ agchat token --parse <user-token>
 
@@ -70,6 +73,14 @@ var tokenCmd = &cobra.Command{
 			}
 			cmd.Printf("Generated token for user [%s]:\n%s\n", userID, userToken)
 		}
+
+		if fApp, _ := cmd.Flags().GetBool("app"); fApp {
+			appToken, err := client.Tokens().GenerateChatAppToken()
+			if err != nil {
+				return err
+			}
+			cmd.Printf("Application token generated successfully:\n%s\n", appToken)
+		}
 		return nil
 	},
 }
@@ -113,5 +124,6 @@ func init() {
 
 	tokenCmd.Flags().StringP("parse", "p", "", "parse an agora token")
 	tokenCmd.Flags().StringP("user", "u", "", "generate a new user token for use in SDK APIs")
+	tokenCmd.Flags().BoolP("app", "a", false, "generate a new app token for use in RESTful APIs")
 
 }
