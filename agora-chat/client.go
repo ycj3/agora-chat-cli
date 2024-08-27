@@ -41,7 +41,7 @@ func NewClient() Client {
 		deviceClient:   http.NewClient[deviceResponseResult](),
 		appTokenExp:    uint32(time.Hour.Seconds() * 24),
 	}
-	appToken, err := client.Tokens().generateChatAppToken()
+	appToken, err := client.Tokens().GenerateChatAppToken()
 	if err != nil {
 		fmt.Printf("error generate app token")
 	}
