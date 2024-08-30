@@ -5,16 +5,14 @@ import (
 )
 
 const (
-	versionMajor      = 0
-	versionMinor      = 1
-	versionPatch      = 0
-	versionPreRelease = "beta"
+	versionMajor = 0
+	versionMinor = 1
+	versionPatch = 0
 )
 
 func FmtVersion() string {
-	return fmt.Sprintf("%d.%d.%d-%s",
+	return fmt.Sprintf("%d.%d.%d",
 		versionMajor,
 		versionMinor,
-		versionPatch,
-		versionPreRelease)
+		versionPatch)
 }
