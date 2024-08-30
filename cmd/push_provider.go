@@ -8,11 +8,8 @@ import (
 
 	"github.com/spf13/cobra"
 	ac "github.com/ycj3/agora-chat-cli/agora-chat"
-	"github.com/ycj3/agora-chat-cli/log"
 	"github.com/ycj3/agora-chat-cli/util"
 )
-
-var logger *log.Logger
 
 var provideCmd = &cobra.Command{
 	Use:   "provider",
@@ -41,7 +38,6 @@ var deleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "delete the provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		logger = log.NewLogger(verbose)
 		uuid, _ := cmd.Flags().GetString("uuid")
 		client := ac.NewClient()
 		res, err := client.Provider().DeletePushProvider(uuid)
@@ -60,8 +56,6 @@ var apnsCmd = &cobra.Command{
 	Use:   "insert-apns",
 	Short: "Insert an APNS push provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		logger = log.NewLogger(verbose)
-
 		apnsTeamId, _ := cmd.Flags().GetString("team-id")
 		apnsKeyId, _ := cmd.Flags().GetString("key-id")
 
@@ -91,8 +85,6 @@ var fcmCmd = &cobra.Command{
 	Use:   "insert-fcm",
 	Short: "Insert an FCM push provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		logger = log.NewLogger(verbose)
-
 		fcmPushType, _ := cmd.Flags().GetString("push-type")
 		fcmPriority, _ := cmd.Flags().GetString("priority")
 		fcmProjectId, _ := cmd.Flags().GetString("project-id")
@@ -125,8 +117,6 @@ var huaweiCmd = &cobra.Command{
 	Use:   "insert-huawei",
 	Short: "Insert a Huawei push provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		logger = log.NewLogger(verbose)
-
 		category, _ := cmd.Flags().GetString("category")
 		activityClass, _ := cmd.Flags().GetString("activityClass")
 

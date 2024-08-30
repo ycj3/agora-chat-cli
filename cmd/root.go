@@ -9,16 +9,22 @@ import (
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 	ac "github.com/ycj3/agora-chat-cli/agora-chat"
+	"github.com/ycj3/agora-chat-cli/log"
 )
 
 var (
 	verbose bool
 )
 
+var logger *log.Logger
+
 var rootCmd = &cobra.Command{
 	Use:   "agchat <command> <subcommand> [flags]",
 	Short: "Agora Chat CLI",
 	Long:  "Interact with your Agora Chat applications easily",
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+		logger = log.NewLogger(verbose)
+	},
 	Example: heredoc.Doc(`
 
 	`),

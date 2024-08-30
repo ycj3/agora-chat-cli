@@ -43,6 +43,14 @@ func (l *Logger) Error(message string, fields map[string]interface{}) {
 	event.Msg(message)
 }
 
+func (l *Logger) Warn(message string, fields map[string]interface{}) {
+	event := l.logger.Warn()
+	for k, v := range fields {
+		event.Interface(k, v)
+	}
+	event.Msg(message)
+}
+
 // Debug logs a debug message
 func (l *Logger) Debug(message string, fields map[string]interface{}) {
 	event := l.logger.Debug()
