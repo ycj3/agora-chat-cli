@@ -4,9 +4,9 @@ import (
 	"errors"
 	gohttp "net/http"
 
-	"github.com/CarlsonYuan/agora-chat-cli/http"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/ycj3/agora-chat-cli/http"
 	"go.uber.org/mock/gomock"
 )
 

@@ -6,9 +6,9 @@ package cmd
 import (
 	"os"
 
-	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
+	ac "github.com/ycj3/agora-chat-cli/agora-chat"
 )
 
 var (

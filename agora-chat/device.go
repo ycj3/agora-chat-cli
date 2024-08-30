@@ -6,7 +6,7 @@ package agora_chat
 import (
 	"fmt"
 
-	"github.com/CarlsonYuan/agora-chat-cli/http"
+	"github.com/ycj3/agora-chat-cli/http"
 )
 
 type DeviceManager struct {

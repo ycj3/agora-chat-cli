@@ -3,33 +3,21 @@
 `agchat` is a command-line interface (CLI) tool for managing Agora chat applications.
 
 - [Installation](#installation)
-- [Commands](#commands)
+- [Usage](#Usage)
 
 ## Installation
 ### Manual
-To install the CLI, clone the repository and build the project:
-
-```sh
-$ git clone https://github.com/CarlsonYuan/agora-chat-cli.git
-$ cd agora-chat-cli
-$ go build -o agchat main.go
-```
-
-Run the command:
-```
-$ ./agchat --version
-agchat version 0.1.0-beta
-```
+You can grab the latest version of ipatool from [GitHub releases](https://github.com/ycj3/agora-chat-cli/releases).
 
 ### Package Manager (macOS)
 You can install `agchat` using [Homebrew](https://brew.sh/).
 
 ```
-brew tap CarlsonYuan/agora-chat-cli https://github.com/CarlsonYuan/agora-chat-cli
+brew tap ycj3/agora-chat-cli https://github.com/ycj3/agora-chat-cli
 brew install agchat
 ```
 
-## Commands
+## Usage
 * Apps Management
 ```
 Manage all chat apps
@@ -135,7 +123,18 @@ Use "agchat push [command] --help" for more information about a command.
 ```
 
 
-**For more detailed documentation, please refer to [here](https://github.com/CarlsonYuan/agora-chat-cli/blob/main/docs/agchat.md).**
+**For more detailed documentation, please refer to [here](https://github.com/ycj3/agora-chat-cli/blob/main/docs/agchat.md).**
+
+## Compiling
+The tool can be compiled using the Go toolchain.
+```
+go build -o agchat
+```
+Unit tests can be executed with the following commands.
+```
+go generate github.com/ycj3/agora-chat-cli/...
+go test -v github.com/ycj3/agora-chat-cli/...
+```
 
 ## License
 

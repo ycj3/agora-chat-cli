@@ -7,7 +7,7 @@ import (
 	"fmt"
 	gohttp "net/http"
 
-	"github.com/CarlsonYuan/agora-chat-cli/http"
+	"github.com/ycj3/agora-chat-cli/http"
 )
 
 type ProviderManager struct {

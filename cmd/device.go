@@ -6,9 +6,9 @@ package cmd
 import (
 	"fmt"
 
-	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
-	"github.com/CarlsonYuan/agora-chat-cli/util"
 	"github.com/spf13/cobra"
+	ac "github.com/ycj3/agora-chat-cli/agora-chat"
+	"github.com/ycj3/agora-chat-cli/util"
 )
 
 var device ac.DeviceInfo

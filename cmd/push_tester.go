@@ -7,11 +7,11 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/CarlsonYuan/agora-chat-cli/log"
+	"github.com/ycj3/agora-chat-cli/log"
 
-	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
+	ac "github.com/ycj3/agora-chat-cli/agora-chat"
 )
 
 var pushCmd = &cobra.Command{

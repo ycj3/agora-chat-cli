@@ -4,7 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package main
 
 import (
-	"github.com/CarlsonYuan/agora-chat-cli/cmd"
+	"github.com/ycj3/agora-chat-cli/cmd"
 )
 
 func main() {

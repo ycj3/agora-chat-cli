@@ -10,9 +10,9 @@ import (
 	"strings"
 
 	"github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src/accesstoken2"
-	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
+	ac "github.com/ycj3/agora-chat-cli/agora-chat"
 )
 
 // tokenCmd represents the token command

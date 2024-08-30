@@ -7,8 +7,8 @@ import (
 	"fmt"
 	"strings"
 
-	ac "github.com/CarlsonYuan/agora-chat-cli/agora-chat"
 	"github.com/spf13/cobra"
+	ac "github.com/ycj3/agora-chat-cli/agora-chat"
 )
 
 var userCmd = &cobra.Command{

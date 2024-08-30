@@ -7,7 +7,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/CarlsonYuan/agora-chat-cli/http"
+	"github.com/ycj3/agora-chat-cli/http"
 )
 
 //go:generate go run go.uber.org/mock/mockgen -source=client.go -destination=client_mock.go -package=agora_chat
