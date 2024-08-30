@@ -7,7 +7,7 @@
 
 ## Installation
 ### Manual
-You can grab the latest version of ipatool from [GitHub releases](https://github.com/ycj3/agora-chat-cli/releases).
+You can grab the latest version of `agchat` from [GitHub releases](https://github.com/ycj3/agora-chat-cli/releases).
 
 ### Package Manager (macOS)
 You can install `agchat` using [Homebrew](https://brew.sh/).
