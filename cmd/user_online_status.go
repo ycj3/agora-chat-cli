@@ -4,11 +4,11 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/spf13/cobra"
 	ac "github.com/ycj3/agora-chat-cli/agora-chat"
+	"github.com/ycj3/agora-chat-cli/util"
 )
 
 var userCmd = &cobra.Command{
@@ -25,7 +25,7 @@ var onlineStatusCmd = &cobra.Command{
 		users, _ := cmd.Flags().GetString("users")
 
 		if users[len(users)-1] == ',' {
-			fmt.Println("Warning: Extra spaces detected in --users flag. They will be removed.")
+			logger.Warn("Extra spaces detected in --users flag. They will be removed.", nil)
 			users = users[:len(users)-1]
 		}
 
@@ -37,13 +37,7 @@ var onlineStatusCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
-
-		for _, status := range statuses {
-			for user, onlineStatus := range status {
-				fmt.Printf("User: %s, Online Status: %s\n", user, onlineStatus)
-			}
-		}
-
+		util.OutputJson(statuses)
 		return nil
 	},
 }
@@ -53,7 +47,7 @@ func init() {
 	rootCmd.AddCommand(userCmd)
 	userCmd.AddCommand(onlineStatusCmd)
 
-	onlineStatusCmd.Flags().String("users", "", "Comma-separated list of users to query the online status for")
+	onlineStatusCmd.Flags().StringP("users", "u", "", "Comma-separated list of users to query the online status for")
 	onlineStatusCmd.MarkFlagRequired("users")
 
 }

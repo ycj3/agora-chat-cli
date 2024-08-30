@@ -7,8 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/ycj3/agora-chat-cli/log"
-
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 	ac "github.com/ycj3/agora-chat-cli/agora-chat"
@@ -47,36 +45,40 @@ var testPushCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("failed to send push notification: %w", err)
 		}
-		logger := log.NewLogger(verbose)
-		handlePushTestResponse(res, logger)
+		handlePushTestResponse(res)
 		return nil
 	},
 }
 
-func handlePushTestResponse(res ac.PushResponseResult, logger *log.Logger) {
+func handlePushTestResponse(res ac.PushResponseResult) {
+
+	// First, handle all success entries
 	for _, dataItem := range res.Data {
-		fields := map[string]interface{}{
-			"timestamp": res.Timestamp,
-		}
-
-		if dataItem.Data != nil {
-			jsonBytes, err := json.Marshal(dataItem.Data)
-			if err != nil {
-				logger.Error(fmt.Sprintf("Error marshalling map: %v", err), nil)
-			}
-			fields["data"] = fmt.Sprintf("the response body from FCM/APNS :%s", string(jsonBytes))
-		}
-
 		if dataItem.PushStatus == "SUCCESS" {
+			fields := map[string]interface{}{
+				"ts":      res.Timestamp,
+				"data":    dataItem.Data,
+				"success": true,
+			}
 			logger.Info("Push notification success", fields)
-		} else if dataItem.PushStatus == "FAIL" {
-			fields["description"] = dataItem.Desc
-			if dataItem.StatusCode > 0 {
-				fields["statusCode"] = dataItem.StatusCode
+		}
+	}
+
+	// Then, handle all failure entries
+	for _, dataItem := range res.Data {
+		if dataItem.PushStatus == "FAIL" {
+			fields := map[string]interface{}{
+				"ts":      res.Timestamp,
+				"error":   dataItem.Desc,
+				"success": false,
+			}
+			if dataItem.Data != nil {
+				fields["data"] = dataItem.Data
 			}
 			logger.Error("Push notification failed", fields)
 		}
 	}
+
 	toubleshootingMsg := "For more details, please refer to the response code documentation for the provider you are using: \n" +
 		"FCM: https://firebase.google.com/docs/reference/fcm/rest/v1/ErrorCode\n" +
 		"APNs :https://developer.apple.com/documentation/usernotifications/handling-notification-responses-from-apns"
