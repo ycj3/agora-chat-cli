@@ -13,7 +13,7 @@ You can grab the latest version of `agchat` from [GitHub releases](https://githu
 You can install `agchat` using [Homebrew](https://brew.sh/).
 
 ```
-brew tap ycj3/agora-chat-cli https://github.com/ycj3/agora-chat-cli
+brew tap ycj3/agchat
 brew install agchat
 ```
 
