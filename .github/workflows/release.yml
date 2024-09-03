@@ -1,0 +1,47 @@
+name: Release to Homebrew
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+jobs:
+  homebrew:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up Go
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.20'
+
+      - name: Calculate SHA256 Checksum
+        id: calculate-sha256
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/}
+          wget https://github.com/${{ github.repository }}/archive/$VERSION.tar.gz
+          SHA256=$(sha256sum $VERSION.tar.gz | cut -d ' ' -f1)
+          echo "SHA256=$SHA256" >> $GITHUB_ENV
+
+      - uses: actions/checkout@v2
+        with: 
+          repository: ${{ secrets.HOMEBREW_AGCHAT }}
+          ref: main
+          token: ${{ secrets.GH_TOKEN }}
+          path: homebrew-agchat
+      -  run: | 
+          cd homebrew-agchat
+          VERSION=${GITHUB_REF#refs/tags/}
+          FORMULA_FILE=Formula/agchat.rb
+          sed -i "s|url \".*\"|url \"https://github.com/${{ github.repository }}/archive/$VERSION.tar.gz\"|g" $FORMULA_FILE
+          sed -i "s|sha256 \".*\"|sha256 \"${{ env.SHA256 }}\"|g" $FORMULA_FILE
+          git config --local user.name "${{ secrets.GH_NAME }}"
+          git config --local user.email "${{ secrets.GH_EMAIL }}"
+          git add Formula/agchat.rb
+          git commit -m "update agchat to $VERSION"
+          git remote set-url origin git@github.com:ycj3/homebrew-agchat.git
+          git push "https://${{ secrets.GH_TOKEN }}@github.com/${{ secrets.HOMEBREW_AGCHAT }}.git" --set-upstream "main"
+
