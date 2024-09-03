@@ -5,6 +5,7 @@ package log
 
 import (
 	"os"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -13,15 +14,23 @@ import (
 type Logger struct {
 	logger  zerolog.Logger
 	verbose bool
+	writer  *zerolog.ConsoleWriter
+}
+
+func (l *Logger) SetFieldsOrder(fieldsOrder []string) {
+	l.writer.FieldsOrder = fieldsOrder
+	l.logger = log.Output(*l.writer)
 }
 
 // NewLogger initializes and returns a new Logger instance
 func NewLogger(verbose bool) *Logger {
-	// Set up zerolog to output human-readable logs
-	logger := log.Output(zerolog.ConsoleWriter{Out: os.Stdout})
+	zerolog.TimestampFunc = time.Now().UTC
+	writer := zerolog.ConsoleWriter{Out: os.Stdout, TimeFormat: time.RFC3339}
+	logger := log.Output(writer)
 	return &Logger{
 		logger:  logger,
 		verbose: verbose,
+		writer:  &writer,
 	}
 }
 
