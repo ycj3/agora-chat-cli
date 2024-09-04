@@ -1,6 +1,6 @@
 ## agchat push test
 
-Test push notification
+Test whether the push notification credentials and notification services work properly
 
 ```
 agchat push test [flags]
@@ -9,7 +9,7 @@ agchat push test [flags]
 ### Examples
 
 ```
-# Send a test push notification for a specific user
+# Send a test push notification to a specific user
 $ agchat push test --user <user-id>
 
 ```

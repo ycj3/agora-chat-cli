@@ -22,5 +22,5 @@ Commands to manage push notifications.
 
 * [agchat](agchat.md)	 - Agora Chat CLI
 * [agchat push provider](agchat_push_provider.md)	 - Manage push providers added to an application
-* [agchat push test](agchat_push_test.md)	 - Test push notification
+* [agchat push test](agchat_push_test.md)	 - Test whether the push notification credentials and notification services work properly
 

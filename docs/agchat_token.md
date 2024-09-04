@@ -12,6 +12,9 @@ agchat token [flags]
 # Generate token for a specific user
 $ agchat token --user <user-id>
 
+# Generate application token
+$ agchat token --app
+
 # Parse an agora token
 $ agchat token --parse <user-token>
 
@@ -46,6 +49,7 @@ $ agchat token --parse <user-token>
 ### Options
 
 ```
+  -a, --app            generate a new app token for use in RESTful APIs
   -h, --help           help for token
   -p, --parse string   parse an agora token
   -u, --user string    generate a new user token for use in SDK APIs

@@ -8,14 +8,13 @@ import (
 
 	"github.com/spf13/cobra"
 	ac "github.com/ycj3/agora-chat-cli/agora-chat"
-	"github.com/ycj3/agora-chat-cli/util"
 )
 
-var provideCmd = &cobra.Command{
+var providerCmd = &cobra.Command{
 	Use:   "provider",
 	Short: "Manage push providers added to an application",
 }
-var listCmd = &cobra.Command{
+var listProvidersCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list all providers",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -29,12 +28,15 @@ var listCmd = &cobra.Command{
 			fmt.Println("no provider added")
 			return nil
 		}
-		util.OutputJson(res.Entities)
+		logger.Info("", map[string]interface{}{
+			"count":    len(res.Entities),
+			"provides": res.Entities,
+		})
 		return nil
 	},
 }
 
-var deleteCmd = &cobra.Command{
+var deleteProviderCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "delete the provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -142,14 +144,14 @@ var huaweiCmd = &cobra.Command{
 }
 
 func init() {
-	pushCmd.AddCommand(provideCmd)
-	provideCmd.AddCommand(listCmd)
+	pushCmd.AddCommand(providerCmd)
+	providerCmd.AddCommand(listProvidersCmd)
 
-	provideCmd.AddCommand(deleteCmd)
-	deleteCmd.Flags().StringP("uuid", "u", "", "the uuid of the provide")
+	providerCmd.AddCommand(deleteProviderCmd)
+	deleteProviderCmd.Flags().StringP("uuid", "u", "", "the uuid of the provide")
 
 	// ANPS
-	provideCmd.AddCommand(apnsCmd)
+	providerCmd.AddCommand(apnsCmd)
 	addCommonFlags(apnsCmd)
 	// Provider-specific flags for APNS
 	apnsCmd.Flags().String("team-id", "", "team ID")
@@ -158,7 +160,7 @@ func init() {
 	apnsCmd.MarkFlagRequired("key-id")
 
 	//FCM
-	provideCmd.AddCommand(fcmCmd)
+	providerCmd.AddCommand(fcmCmd)
 	addCommonFlags(fcmCmd)
 	// Provider-specific flags for FCM
 	fcmCmd.Flags().String("push-type", "", "push type")
@@ -166,7 +168,7 @@ func init() {
 	fcmCmd.Flags().String("project-id", "", "project ID")
 	fcmCmd.Flags().String("version", "", "version")
 
-	provideCmd.AddCommand(huaweiCmd)
+	providerCmd.AddCommand(huaweiCmd)
 	addCommonFlags(huaweiCmd)
 	// Provider-specific flags for HUAWEI
 	huaweiCmd.Flags().String("category", "", "category")

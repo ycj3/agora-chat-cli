@@ -14,7 +14,7 @@ agchat user online-status [flags]
 
 ```
   -h, --help           help for online-status
-      --users string   Comma-separated list of users to query the online status for
+  -u, --users string   Comma-separated list of users to query the online status for
 ```
 
 ### Options inherited from parent commands
