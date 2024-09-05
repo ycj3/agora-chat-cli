@@ -12,10 +12,6 @@ import (
 	"github.com/spf13/viper"
 )
 
-// type Apps interface {
-// 	SomeMethod(x int64, y string)
-// }
-
 func (apps *Apps) RunQuestionnaire() error {
 	var newApp App
 	err := survey.Ask(questions(), &newApp)

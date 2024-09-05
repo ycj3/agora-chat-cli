@@ -16,6 +16,7 @@ var (
 	verbose bool
 )
 
+var version = "dev"
 var logger *log.Logger
 
 var rootCmd = &cobra.Command{
@@ -28,7 +29,7 @@ var rootCmd = &cobra.Command{
 	Example: heredoc.Doc(`
 
 	`),
-	Version: ac.FmtVersion(),
+	Version: version,
 }
 
 func Execute() {

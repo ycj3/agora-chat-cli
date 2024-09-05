@@ -5,6 +5,10 @@
 - [Installation](#installation)
 - [Usage](#Usage)
 
+## Requirements
+- Supported operating system (Windows, Linux or macOS).
+- App ID, App Certificate, and Base URL for Chat (you can find them in the Agora Console)
+
 ## Installation
 ### Manual
 You can grab the latest version of `agchat` from [GitHub releases](https://github.com/ycj3/agora-chat-cli/releases).
