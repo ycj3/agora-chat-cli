@@ -31,7 +31,14 @@ var onlineStatusCmd = &cobra.Command{
 
 		userIDs := strings.Split(users, ",")
 
-		client := ac.NewClient()
+		client, err := ac.NewClient()
+		if err != nil {
+			logger.Error("Failed to get client", map[string]interface{}{
+				"error": err.Error(),
+				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
+			})
+			return nil
+		}
 		statuses, err := client.User().UserOnlineStatuses(userIDs)
 
 		if err != nil {

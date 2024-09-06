@@ -65,7 +65,14 @@ var tokenCmd = &cobra.Command{
 			cmd.Printf("Decoded Payload:\n%s\n", tokenInfo)
 		}
 
-		client := ac.NewClient()
+		client, err := ac.NewClient()
+		if err != nil {
+			logger.Error("Failed to get client", map[string]interface{}{
+				"error": err.Error(),
+				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
+			})
+			return nil
+		}
 		if userID, _ := cmd.Flags().GetString("user"); userID != "" {
 			userToken, err := client.Tokens().GenerateChatUserToken(userID)
 			if err != nil {

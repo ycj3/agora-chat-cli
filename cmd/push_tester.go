@@ -26,7 +26,7 @@ var testPushCmd = &cobra.Command{
 		$ agchat push test --user <user-id>
 	`),
 
-	Run: func(cmd *cobra.Command, args []string) {
+	RunE: func(cmd *cobra.Command, args []string) error {
 
 		userID, _ := cmd.Flags().GetString("user")
 		if userID == "" {
@@ -41,15 +41,23 @@ var testPushCmd = &cobra.Command{
 			})
 		}
 
-		client := ac.NewClient()
+		client, err := ac.NewClient()
+		if err != nil {
+			logger.Error("Failed to get client", map[string]interface{}{
+				"error": err.Error(),
+				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
+			})
+			return nil
+		}
+
 		// Step 1: check if you have registered the push notification credentials with the Agora Chat Server.
-		err := checkPushCredential(client, cmd, args)
+		err = checkPushCredential(client, cmd, args)
 		if err != nil {
 			logger.Error("✖ Step 1: Failed to check the push notification credentials %w", map[string]interface{}{
 				"error":   err.Error(),
 				"success": false,
 			})
-			return
+			return nil
 		}
 
 		// Step 2: check if you have registered a device token with the Agora Chat Server for the target user.
@@ -59,7 +67,7 @@ var testPushCmd = &cobra.Command{
 				"error":   err.Error(),
 				"success": false,
 			})
-			return
+			return nil
 		}
 
 		// Step 3: Send push notification
@@ -67,9 +75,10 @@ var testPushCmd = &cobra.Command{
 
 		err = handlePushTestResponse(res)
 		if err != nil {
-			return
+			return nil
 		}
 		logger.Info("Push notification test completed.", nil)
+		return nil
 
 	},
 }

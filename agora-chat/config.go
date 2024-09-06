@@ -57,13 +57,17 @@ func LoadConfig() (*Apps, error) {
 	return &apps, nil
 }
 
-func GetActiveApp() *App {
+func GetActiveApp() (*App, error) {
 	apps, _ := LoadConfig()
+
+	if len(apps.Apps) == 0 {
+		return nil, fmt.Errorf("No app exists")
+	}
+
 	for _, app := range apps.Apps {
 		if app.AppID == apps.Active {
-			return &app
+			return &app, nil
 		}
 	}
-	fmt.Printf("active app %s not found", apps.Active)
-	return nil
+	return nil, fmt.Errorf("Failed to find active app")
 }

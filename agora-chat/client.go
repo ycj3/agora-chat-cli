@@ -31,9 +31,15 @@ type client struct {
 	deviceClient   http.Client[deviceResponseResult]
 }
 
-func NewClient() Client {
+func NewClient() (Client, error) {
+
+	app, err := GetActiveApp()
+	if app == nil {
+		return nil, fmt.Errorf("Failed to get active app: %w", err)
+	}
+
 	client := &client{
-		appConfig:      GetActiveApp(),
+		appConfig:      app,
 		messageClient:  http.NewClient[messageResponseResult](),
 		userClient:     http.NewClient[userResponseResult](),
 		pushClient:     http.NewClient[PushResponseResult](),
@@ -43,10 +49,10 @@ func NewClient() Client {
 	}
 	appToken, err := client.Tokens().GenerateChatAppToken()
 	if err != nil {
-		fmt.Printf("error generate app token")
+		return nil, fmt.Errorf("Failed to generate app token")
 	}
 	client.appToken = appToken
-	return client
+	return client, nil
 }
 
 func (c *client) Tokens() *TokenManager {
