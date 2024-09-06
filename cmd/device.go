@@ -15,7 +15,6 @@ var device ac.DeviceInfo
 
 func init() {
 
-	rootCmd.AddCommand(deviceCmd)
 	deviceCmd.PersistentFlags().StringP("user", "u", "", "the user ID of the target user")
 	deviceCmd.MarkPersistentFlagRequired("user")
 
@@ -47,14 +46,6 @@ var addDeviceCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		userID, _ := cmd.Flags().GetString("user")
 
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
 		devices, err := client.Device().AddPushDevice(userID, device.DeviceID, device.DeviceToken, device.NotifierName)
 		if err != nil {
 			return fmt.Errorf("failed to add device: %w", err)
@@ -74,15 +65,7 @@ var removeDeviceCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		userID, _ := cmd.Flags().GetString("user")
 
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
-		_, err = client.Device().RemovePushDevice(userID, device.DeviceID, device.NotifierName)
+		_, err := client.Device().RemovePushDevice(userID, device.DeviceID, device.NotifierName)
 		if err != nil {
 			return fmt.Errorf("failed to remove device: %w", err)
 		}
@@ -97,14 +80,6 @@ var listDevicesCmd = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		userID, _ := cmd.Flags().GetString("user")
 
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
 		devices, err := client.Device().ListPushDevice(userID)
 		if err != nil {
 			return fmt.Errorf("failed to list devices: %w", err)

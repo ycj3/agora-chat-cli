@@ -41,17 +41,8 @@ var testPushCmd = &cobra.Command{
 			})
 		}
 
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
-
 		// Step 1: check if you have registered the push notification credentials with the Agora Chat Server.
-		err = checkPushCredential(client, cmd, args)
+		err := checkPushCredential(cmd, args)
 		if err != nil {
 			logger.Error("✖ Step 1: Failed to check the push notification credentials %w", map[string]interface{}{
 				"error":   err.Error(),
@@ -61,7 +52,7 @@ var testPushCmd = &cobra.Command{
 		}
 
 		// Step 2: check if you have registered a device token with the Agora Chat Server for the target user.
-		err = checkPushDeviceToken(client, userID, cmd, args)
+		err = checkPushDeviceToken(userID, cmd, args)
 		if err != nil {
 			logger.Error("✖ Step 2: Failed to check the push device tokens", map[string]interface{}{
 				"error":   err.Error(),
@@ -84,8 +75,8 @@ var testPushCmd = &cobra.Command{
 }
 
 // Step 1
-func checkPushCredential(c ac.Client, cmd *cobra.Command, args []string) error {
-	res, err := c.Provider().ListPushProviders()
+func checkPushCredential(cmd *cobra.Command, args []string) error {
+	res, err := client.Provider().ListPushProviders()
 	if err != nil {
 		return fmt.Errorf("Failed to list providers: %w", err)
 	}
@@ -99,8 +90,8 @@ func checkPushCredential(c ac.Client, cmd *cobra.Command, args []string) error {
 }
 
 // Step 2
-func checkPushDeviceToken(c ac.Client, userID string, cmd *cobra.Command, args []string) error {
-	devices, err := c.Device().ListPushDevice(userID)
+func checkPushDeviceToken(userID string, cmd *cobra.Command, args []string) error {
+	devices, err := client.Device().ListPushDevice(userID)
 	if err != nil {
 		return fmt.Errorf("Failed to list push devices: %w", err)
 	}
@@ -154,7 +145,6 @@ func handlePushTestResponse(res ac.PushResponseResult) error {
 }
 
 func init() {
-	rootCmd.AddCommand(pushCmd)
 	pushCmd.AddCommand(testPushCmd)
 
 	testPushCmd.Flags().StringP("user", "u", "", "the user ID of the target user")

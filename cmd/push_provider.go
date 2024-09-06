@@ -18,14 +18,7 @@ var listProvidersCmd = &cobra.Command{
 	Use:   "list",
 	Short: "list all providers",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
+
 		res, err := client.Provider().ListPushProviders()
 		if err != nil {
 			return fmt.Errorf("failed to list providers: %w", err)
@@ -48,14 +41,7 @@ var deleteProviderCmd = &cobra.Command{
 	Short: "delete the provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		uuid, _ := cmd.Flags().GetString("uuid")
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
+
 		res, err := client.Provider().DeletePushProvider(uuid)
 		if err != nil {
 			return fmt.Errorf("failed to delete the provider: %w", err)
@@ -82,14 +68,7 @@ var apnsCmd = &cobra.Command{
 			TeamId: apnsTeamId,
 			KeyId:  apnsKeyId,
 		}
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
+
 		res, err := client.Provider().InsertPushProvider(apns)
 		if err != nil {
 			logger.Error("failed to send request,", map[string]interface{}{
@@ -121,14 +100,7 @@ var fcmCmd = &cobra.Command{
 			ProjectId: fcmProjectId,
 			Version:   fcmVersion,
 		}
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
+
 		res, err := client.Provider().InsertPushProvider(fcm)
 		if err != nil {
 			logger.Error("failed to send request,", map[string]interface{}{
@@ -156,14 +128,7 @@ var huaweiCmd = &cobra.Command{
 			Category:      category,
 			ActivityClass: activityClass,
 		}
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
+
 		res, err := client.Provider().InsertPushProvider(hw)
 		if err != nil {
 			logger.Error("failed to send request,", map[string]interface{}{

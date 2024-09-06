@@ -12,7 +12,6 @@ import (
 	"github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src/accesstoken2"
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
-	ac "github.com/ycj3/agora-chat-cli/agora-chat"
 )
 
 // tokenCmd represents the token command
@@ -65,14 +64,6 @@ var tokenCmd = &cobra.Command{
 			cmd.Printf("Decoded Payload:\n%s\n", tokenInfo)
 		}
 
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
 		if userID, _ := cmd.Flags().GetString("user"); userID != "" {
 			userToken, err := client.Tokens().GenerateChatUserToken(userID)
 			if err != nil {
@@ -127,10 +118,7 @@ func cleanBase64(input string) string {
 }
 
 func init() {
-	rootCmd.AddCommand(tokenCmd)
-
 	tokenCmd.Flags().StringP("parse", "p", "", "parse an agora token")
 	tokenCmd.Flags().StringP("user", "u", "", "generate a new user token for use in SDK APIs")
 	tokenCmd.Flags().BoolP("app", "a", false, "generate a new app token for use in RESTful APIs")
-
 }

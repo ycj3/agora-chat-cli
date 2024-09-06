@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/spf13/cobra"
-	ac "github.com/ycj3/agora-chat-cli/agora-chat"
 	"github.com/ycj3/agora-chat-cli/util"
 )
 
@@ -31,14 +30,6 @@ var onlineStatusCmd = &cobra.Command{
 
 		userIDs := strings.Split(users, ",")
 
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
 		statuses, err := client.User().UserOnlineStatuses(userIDs)
 
 		if err != nil {
@@ -51,7 +42,6 @@ var onlineStatusCmd = &cobra.Command{
 
 func init() {
 
-	rootCmd.AddCommand(userCmd)
 	userCmd.AddCommand(onlineStatusCmd)
 
 	onlineStatusCmd.Flags().StringP("users", "u", "", "Comma-separated list of users to query the online status for")

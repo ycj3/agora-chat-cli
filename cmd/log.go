@@ -31,14 +31,6 @@ var logUploadCmd = &cobra.Command{
 
 		userIDs := strings.Split(users, ",")
 
-		client, err := ac.NewClient()
-		if err != nil {
-			logger.Error("Failed to get client", map[string]interface{}{
-				"error": err.Error(),
-				"desc":  "Please make sure you have created an app using the 'agchat apps --create' command",
-			})
-			return nil
-		}
 		statuses, err := client.User().UserOnlineStatuses(userIDs)
 
 		if err != nil {
@@ -49,7 +41,7 @@ var logUploadCmd = &cobra.Command{
 			for user, onlineStatus := range status {
 				fmt.Printf("User: %s, Online Status: %s\n", user, onlineStatus)
 				if onlineStatus == "online" {
-					sendUploadLogsCMD(client, []string{user})
+					sendUploadLogsCMD([]string{user})
 				}
 			}
 		}
@@ -58,7 +50,7 @@ var logUploadCmd = &cobra.Command{
 	},
 }
 
-func sendUploadLogsCMD(client ac.Client, userIDs []string) {
+func sendUploadLogsCMD(userIDs []string) {
 	msgIDs, err := client.Message().SendUserMessage(
 		"admin",
 		userIDs,
@@ -77,7 +69,6 @@ func sendUploadLogsCMD(client ac.Client, userIDs []string) {
 }
 func init() {
 
-	rootCmd.AddCommand(logCmd)
 	logCmd.AddCommand(logUploadCmd)
 
 	logUploadCmd.Flags().String("users", "", "Comma-separated list of users to send a upload command to the online users for")
