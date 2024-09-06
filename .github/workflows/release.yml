@@ -124,12 +124,14 @@ jobs:
         env:
           FILE: agchat-${{ needs.get_version.outputs.version }}-macos-amd64
       - name: Calculate SHA256 Checksum
-        id: calculate-sha256
+        id: sha256
         run: |
-          VERSION=${GITHUB_REF#refs/tags/}
-          wget https://github.com/${{ github.repository }}/archive/$VERSION.tar.gz
-          SHA256=$(sha256sum $VERSION.tar.gz | cut -d ' ' -f1)
-          echo "SHA256=$SHA256" >> $GITHUB_ENV
+          SHA256_ARM64=$(./agora-chat-cli/tools/sha256sum.sh agchat-${{ needs.get_version.outputs.version }}-macos-arm64.tar.gz)
+          SHA256_AMD64=$(./agora-chat-cli/tools/sha256sum.sh agchat-${{ needs.get_version.outputs.version }}-macos-amd64.tar.gz)
+          echo $SHA256_ARM64 > agchat-${{ needs.get_version.outputs.version }}-macos-arm64.tar.gz.sha256sum
+          echo $SHA256_AMD64 > agchat-${{ needs.get_version.outputs.version }}-macos-amd64.tar.gz.sha256sum
+          echo "sha256_arm64=$SHA256_ARM64" >> $GITHUB_OUTPUT
+          echo "sha256_amd64=$SHA256_AMD64" >> $GITHUB_OUTPUT
       - uses: svenstaro/upload-release-action@v2
         with:
           repo_token: ${{ secrets.GH_TOKEN }}
@@ -145,14 +147,21 @@ jobs:
           path: homebrew-agchat
       -  run: | 
           cd homebrew-agchat
-          VERSION=${GITHUB_REF#refs/tags/}
+          VERSION=${{ needs.get_version.outputs.version }}
+          SHA256_ARM64=${{ steps.sha256.outputs.sha256_arm64 }}
+          SHA256_AMD64=${{ steps.sha256.outputs.sha256_amd64 }}
           FORMULA_FILE=Formula/agchat.rb
-          sed -i "s|url \".*\"|url \"https://github.com/${{ github.repository }}/archive/$VERSION.tar.gz\"|g" $FORMULA_FILE
-          sed -i "s|sha256 \".*\"|sha256 \"${{ env.SHA256 }}\"|g" $FORMULA_FILE
+          sed -i "4s/.*/    version \"$VERSION\"/" $FORMULA_FILE
+          sed -i "7s/.*/      url \"https:\/\/github.com\/ycj3\/agora-chat-cli\/releases\/download\/v$VERSION\/agchat-$VERSION-macos-arm64.tar.gz\"/" $FORMULA_FILE
+          sed -i "8s/.*/      sha256 \"$SHA256_ARM64\"/" $FORMULA_FILE
+          sed -i "10s/.*/      url \"https:\/\/github.com\/ycj3\/agora-chat-cli\/releases\/download\/v$VERSION\/agchat-$VERSION-macos-amd64.tar.gz\"/" $FORMULA_FILE
+          sed -i "11s/.*/      sha256 \"$SHA256_AMD64\"/" $FORMULA_FILE
+          sed -i "16s/.*/        bin.install \"agchat-$VERSION-macos-arm64\" => \"agchat\"/" $FORMULA_FILE
+          sed -i "18s/.*/        bin.install \"agchat-$VERSION-macos-amd64\" => \"agchat\"/" $FORMULA_FILE
           git config --local user.name "${{ secrets.GH_NAME }}"
           git config --local user.email "${{ secrets.GH_EMAIL }}"
           git add Formula/agchat.rb
-          git commit -m "update agchat to $VERSION"
+          git commit -m "Update agchat to $VERSION"
           git remote set-url origin git@github.com:ycj3/homebrew-agchat.git
           git push "https://${{ secrets.GH_TOKEN }}@github.com/${{ secrets.HOMEBREW_AGCHAT }}.git" --set-upstream "main"
   release_windows:
