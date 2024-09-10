@@ -10,6 +10,7 @@ import (
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 	ac "github.com/ycj3/agora-chat-cli/agora-chat"
+	"github.com/ycj3/agora-chat-cli/util"
 )
 
 var pushCmd = &cobra.Command{
@@ -44,7 +45,7 @@ var testPushCmd = &cobra.Command{
 		// Step 1: check if you have registered the push notification credentials with the Agora Chat Server.
 		err := checkPushCredential(cmd, args)
 		if err != nil {
-			logger.Error("✖ Step 1: Failed to check the push notification credentials %w", map[string]interface{}{
+			logger.Error("✖ Step 1: Failed to check the push notification credentials", map[string]interface{}{
 				"error":   err.Error(),
 				"success": false,
 			})
@@ -124,16 +125,22 @@ func handlePushTestResponse(res ac.PushResponseResult) error {
 	}
 
 	if len(succssEntries) > 0 {
-		logger.Info("✔ Step 3: Sent push notification\n", map[string]interface{}{
-			"success": map[string]interface{}{"results": succssEntries, "count": len(succssEntries)},
-			"failure": map[string]interface{}{"errorResults": failuresEntries, "count": len(failuresEntries)},
-			"count":   len(res.Data),
+		logger.Info("✔ Step 3: Sent push notification to device(s)", map[string]interface{}{
+			"totalCount": len(res.Data),
 		})
+		logger.Info("Success result(s)", map[string]interface{}{
+			"count": len(succssEntries),
+		})
+		util.Print(succssEntries, util.OutputFormatJSON, nil)
+		logger.Info("Failure result(s)", map[string]interface{}{
+			"count": len(failuresEntries),
+		})
+		util.Print(failuresEntries, util.OutputFormatJSON, nil)
 	} else {
-		logger.Error("✖ Step 3: Failed to send push notification\n", map[string]interface{}{
-			"failure": map[string]interface{}{"errorResults": failuresEntries, "count": len(failuresEntries)},
-			"count":   len(res.Data),
+		logger.Error("✖ Step 3: Failed to send push notification to device(s)", map[string]interface{}{
+			"count": len(failuresEntries),
 		})
+		util.Print(failuresEntries, util.OutputFormatJSON, nil)
 		return fmt.Errorf("")
 	}
 
