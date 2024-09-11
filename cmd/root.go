@@ -27,7 +27,7 @@ func rootCmd() *cobra.Command {
 		Long:  "Interact with your Agora Chat applications easily",
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			logger = log.NewLogger(verbose)
-			if cmd.Use != "apps" && cmd.Use != "doc" {
+			if cmd.Use != "apps" && cmd.Use != "doc" && cmd.Use != "fcm" {
 				initChatClient()
 			}
 
@@ -53,6 +53,7 @@ func rootCmd() *cobra.Command {
 	cmd.AddCommand(pushCmd)
 	cmd.AddCommand(userCmd)
 	cmd.AddCommand(tokenCmd)
+	cmd.AddCommand(fcmCmd)
 
 	return cmd
 }
