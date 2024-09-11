@@ -83,7 +83,7 @@ var apnsCmd = &cobra.Command{
 	},
 }
 
-var fcmCmd = &cobra.Command{
+var insertFcmCmd = &cobra.Command{
 	Use:   "insert-fcm",
 	Short: "Insert an FCM push provider",
 	RunE: func(cmd *cobra.Command, args []string) error {
@@ -160,13 +160,13 @@ func init() {
 	apnsCmd.MarkFlagRequired("key-id")
 
 	//FCM
-	providerCmd.AddCommand(fcmCmd)
-	addCommonFlags(fcmCmd)
+	providerCmd.AddCommand(insertFcmCmd)
+	addCommonFlags(insertFcmCmd)
 	// Provider-specific flags for FCM
-	fcmCmd.Flags().String("push-type", "", "push type")
-	fcmCmd.Flags().String("priority", "", "priority")
-	fcmCmd.Flags().String("project-id", "", "project ID")
-	fcmCmd.Flags().String("version", "", "version")
+	insertFcmCmd.Flags().String("push-type", "", "push type")
+	insertFcmCmd.Flags().String("priority", "", "priority")
+	insertFcmCmd.Flags().String("project-id", "", "project ID")
+	insertFcmCmd.Flags().String("version", "", "version")
 
 	providerCmd.AddCommand(huaweiCmd)
 	addCommonFlags(huaweiCmd)
