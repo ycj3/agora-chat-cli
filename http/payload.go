@@ -19,7 +19,7 @@ type XMLPayload struct {
 }
 
 type JSONPayload struct {
-	Content map[string]interface{}
+	Content any
 }
 
 type URLPayload struct {
