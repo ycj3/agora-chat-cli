@@ -51,15 +51,15 @@ var logUploadCmd = &cobra.Command{
 }
 
 func sendUploadLogsCMD(userIDs []string) {
-	msgIDs, err := client.Message().SendUserMessage(
-		"admin",
-		userIDs,
-		ac.MessageTypeCmd,
-		map[string]interface{}{
-			"type":   "cmd",
-			"action": "em_upload_log",
+	message := ac.Message{
+		From: "admin",
+		To:   userIDs,
+		Type: ac.MessageTypeCmd,
+		Body: ac.CMDMessageBody{
+			Action: "em_upload_log",
 		},
-		nil)
+	}
+	msgIDs, err := client.Message().SendUsersMessage(&message)
 	if err != nil {
 		fmt.Println(err)
 	}
