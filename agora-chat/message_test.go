@@ -32,22 +32,21 @@ var _ = Describe("MessageManager", func() {
 		ctrl.Finish()
 	})
 
-	Context("SendUserMessage", func() {
+	Context("SendUsersMessage", func() {
 		var (
-			from     string
-			to       []string
-			msgType  MessageType
-			body     map[string]interface{}
-			options  map[string]interface{}
+			message  *Message
 			response http.Result[messageResponseResult]
 		)
 
 		BeforeEach(func() {
-			from = "user1"
-			to = []string{"user2"}
-			msgType = MessageTypeText
-			body = map[string]interface{}{"msg": "Hello"}
-			options = map[string]interface{}{"option1": "value1"}
+			message = &Message{
+				From: "user1",
+				To:   []string{"user2"},
+				Type: MessageTypeText,
+				Body: TextMessageBody{
+					Msg: "Hello",
+				},
+			}
 			response = http.Result[messageResponseResult]{
 				StatusCode: gohttp.StatusOK,
 				Data: messageResponseResult{
@@ -61,7 +60,7 @@ var _ = Describe("MessageManager", func() {
 				Send(gomock.Any()).
 				Return(response, nil)
 
-			result, err := messageManager.SendUserMessage(from, to, msgType, body, options)
+			result, err := messageManager.SendUsersMessage(message)
 			Expect(err).To(BeNil())
 			Expect(result).To(Equal(map[string]string{"message": "Message sent successfully"}))
 		})
@@ -71,7 +70,7 @@ var _ = Describe("MessageManager", func() {
 				Send(gomock.Any()).
 				Return(http.Result[messageResponseResult]{}, errors.New("request failed"))
 
-			result, err := messageManager.SendUserMessage(from, to, msgType, body, options)
+			result, err := messageManager.SendUsersMessage(message)
 			Expect(err).To(HaveOccurred())
 			Expect(result).To(BeNil())
 			Expect(err.Error()).To(Equal("request failed: request failed"))
@@ -87,7 +86,7 @@ var _ = Describe("MessageManager", func() {
 		// 		Send(gomock.Any()).
 		// 		Return(response, nil)
 
-		// 	result, err := messageManager.SendUserMessage(from, to, msgType, body, options)
+		// 	result, err := messageManager.SendUsersMessage(from, to, msgType, body, options)
 		// 	Expect(err).To(HaveOccurred())
 		// 	Expect(result).To(BeNil())
 		// })

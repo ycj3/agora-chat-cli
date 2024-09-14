@@ -54,6 +54,7 @@ func rootCmd() *cobra.Command {
 	cmd.AddCommand(userCmd)
 	cmd.AddCommand(tokenCmd)
 	cmd.AddCommand(fcmCmd)
+	cmd.AddCommand(messageCmd())
 
 	return cmd
 }

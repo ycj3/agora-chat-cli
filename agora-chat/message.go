@@ -13,19 +13,6 @@ type MessageManager struct {
 	client *client
 }
 
-type MessageType string
-
-const (
-	MessageTypeText   MessageType = "txt"    // Text message
-	MessageTypeImage  MessageType = "img"    // Image message
-	MessageTypeAudio  MessageType = "audio"  // Voice message
-	MessageTypeVideo  MessageType = "video"  // Video message
-	MessageTypeFile   MessageType = "file"   // File message
-	MessageTypeLoc    MessageType = "loc"    // Location message
-	MessageTypeCmd    MessageType = "cmd"    // Command message
-	MessageTypeCustom MessageType = "custom" // Custom message
-)
-
 type messageResponseResult struct {
 	Response
 	Path            string            `json:"path"`
@@ -36,8 +23,13 @@ type messageResponseResult struct {
 	ApplicationName string            `json:"applicationName"`
 }
 
-func (mm *MessageManager) SendUserMessage(from string, to []string, msgType MessageType, body map[string]interface{}, options map[string]interface{}) (map[string]string, error) {
-	request := mm.sendUserMessageRequest(from, to, msgType, body, options)
+// SendUserMessage sends a Message to users via Agora Chat Server.
+func (mm *MessageManager) SendUsersMessage(message *Message) (map[string]string, error) {
+	request, err := mm.sendUsersMessageRequest(message)
+	if err != nil {
+		return nil, err
+	}
+
 	res, err := mm.client.messageClient.Send(request)
 	if err != nil {
 		return nil, fmt.Errorf("request failed: %w", err)
@@ -45,21 +37,13 @@ func (mm *MessageManager) SendUserMessage(from string, to []string, msgType Mess
 	return res.Data.Data, nil
 }
 
-func (mm *MessageManager) sendUserMessageRequest(from string, to []string, msgType MessageType, body map[string]interface{}, options map[string]interface{}) http.Request {
-
-	var reqBody = map[string]interface{}{
-		"from": from,
-		"to":   to,
-		"type": msgType,
-		"body": body,
-	}
-
-	for key, value := range options {
-		reqBody[key] = value
+func (mm *MessageManager) sendUsersMessageRequest(message *Message) (http.Request, error) {
+	if err := validateMessage(message); err != nil {
+		return http.Request{}, err
 	}
 
 	req := http.Request{
-		URL:            mm.sendUserMessageURL(),
+		URL:            mm.sendUsersMessageURL(),
 		Method:         http.MethodPOST,
 		ResponseFormat: http.ResponseFormatJSON,
 		Headers: map[string]string{
@@ -67,22 +51,88 @@ func (mm *MessageManager) sendUserMessageRequest(from string, to []string, msgTy
 			"Authorization": "Bearer " + mm.client.appToken,
 		},
 		Payload: &http.JSONPayload{
-			Content: reqBody,
+			Content: message,
 		},
 	}
-	return req
+	return req, nil
 }
 
-func (mm *MessageManager) sendUserMessageURL() string {
+func (mm *MessageManager) sendUsersMessageURL() string {
 	baseURL := mm.client.appConfig.BaseURL
 	return fmt.Sprintf("%s/messages/users", baseURL)
 }
 
+// SendGroupMessage sends a Message to groups via Agora Chat Server.
+func (mm *MessageManager) SendGroupsMessage(message *Message) (map[string]string, error) {
+	request, err := mm.sendGroupsMessageRequest(message)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := mm.client.messageClient.Send(request)
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
+	return res.Data.Data, nil
+}
+
+func (mm *MessageManager) sendGroupsMessageRequest(message *Message) (http.Request, error) {
+	if err := validateMessage(message); err != nil {
+		return http.Request{}, err
+	}
+
+	req := http.Request{
+		URL:            mm.sendChatgroupMessageURL(),
+		Method:         http.MethodPOST,
+		ResponseFormat: http.ResponseFormatJSON,
+		Headers: map[string]string{
+			"Content-Type":  "application/json",
+			"Authorization": "Bearer " + mm.client.appToken,
+		},
+		Payload: &http.JSONPayload{
+			Content: message,
+		},
+	}
+	return req, nil
+}
 func (mm *MessageManager) sendChatgroupMessageURL() string {
 	baseURL := mm.client.appConfig.BaseURL
 	return fmt.Sprintf("%s/messages/chatgroups", baseURL)
 }
 
+// SendRoomsMessage sends a Message to rooms via Agora Chat Server.
+func (mm *MessageManager) SendRoomsMessage(message *Message) (map[string]string, error) {
+	request, err := mm.sendRoomsMessageRequest(message)
+	if err != nil {
+		return nil, err
+	}
+
+	res, err := mm.client.messageClient.Send(request)
+	if err != nil {
+		return nil, fmt.Errorf("request failed: %w", err)
+	}
+	return res.Data.Data, nil
+}
+
+func (mm *MessageManager) sendRoomsMessageRequest(message *Message) (http.Request, error) {
+	if err := validateMessage(message); err != nil {
+		return http.Request{}, err
+	}
+
+	req := http.Request{
+		URL:            mm.sendChatroomMessageURL(),
+		Method:         http.MethodPOST,
+		ResponseFormat: http.ResponseFormatJSON,
+		Headers: map[string]string{
+			"Content-Type":  "application/json",
+			"Authorization": "Bearer " + mm.client.appToken,
+		},
+		Payload: &http.JSONPayload{
+			Content: message,
+		},
+	}
+	return req, nil
+}
 func (mm *MessageManager) sendChatroomMessageURL() string {
 	baseURL := mm.client.appConfig.BaseURL
 	return fmt.Sprintf("%s/messages/chatrooms", baseURL)
