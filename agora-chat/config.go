@@ -13,6 +13,16 @@ import (
 
 const configDir = "agora-chat-cli"
 
+type Config interface {
+	GetActiveApp() (*App, error)
+	GetApps() (Apps, error)
+}
+
+type config struct {
+	Path string
+	Apps Apps
+}
+
 type Apps struct {
 	Active string `yaml:"active" mapstructure:"active"`
 	Apps   []App  `yaml:"apps" mapstructure:"apps"`
@@ -23,26 +33,25 @@ type App struct {
 	AppID          string `yaml:"app-id" mapstructure:"app-id"`
 	AppCertificate string `yaml:"app-certificate" mapstructure:"app-certificate"`
 	BaseURL        string `yaml:"base-url" mapstructure:"base-url"`
+	AppTokenExp    uint32 `yaml:"app-token-expire" mapstructure:"app-token-expire"`
 }
 
-func LoadConfig() (*Apps, error) {
-	var configPath string
+func NewConfig() (Config, error) {
 	dir, err := os.UserConfigDir()
 	if err != nil {
 		return nil, fmt.Errorf("error getting user config directory: %v", err)
 	}
-	configPath = filepath.Join(dir, configDir, "config.yml")
-
-	// fmt.Println("Config Path is :", configPath)
-	viper.SetConfigFile(configPath)
+	cfgPath := filepath.Join(dir, configDir, "config.yml")
+	// fmt.Println("Config Path is :", cfgPath)
+	viper.SetConfigFile(cfgPath)
 
 	if err := viper.ReadInConfig(); err != nil && os.IsNotExist(err) {
 
-		if err := os.MkdirAll(filepath.Dir(configPath), 0o755); err != nil {
+		if err := os.MkdirAll(filepath.Dir(cfgPath), 0o755); err != nil {
 			return nil, fmt.Errorf("error making dir for config file: %v", err)
 		}
 
-		f, err := os.Create(configPath)
+		f, err := os.Create(cfgPath)
 		if err != nil {
 			return nil, fmt.Errorf("error creating config file: %v", err)
 		}
@@ -54,20 +63,27 @@ func LoadConfig() (*Apps, error) {
 		return nil, fmt.Errorf("unable to decode into struct: %v", err)
 	}
 
-	return &apps, nil
+	return &config{Path: cfgPath, Apps: apps}, nil
 }
 
-func GetActiveApp() (*App, error) {
-	apps, _ := LoadConfig()
-
+func (cfg *config) GetActiveApp() (*App, error) {
+	apps := cfg.Apps
 	if len(apps.Apps) == 0 {
-		return nil, fmt.Errorf("No app exists")
+		return nil, fmt.Errorf("no app exists")
 	}
 
 	for _, app := range apps.Apps {
-		if app.AppID == apps.Active {
+		if app.Name == apps.Active {
 			return &app, nil
 		}
 	}
-	return nil, fmt.Errorf("Failed to find active app")
+	return nil, fmt.Errorf("failed to find active app")
+}
+
+func (cfg *config) GetApps() (Apps, error) {
+	apps := cfg.Apps
+	if len(apps.Apps) == 0 {
+		return Apps{}, fmt.Errorf("no app exists")
+	}
+	return apps, nil
 }

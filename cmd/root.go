@@ -19,6 +19,7 @@ var (
 var version = "dev"
 var logger *log.Logger
 var client ac.Client
+var acCfg ac.Config
 
 func rootCmd() *cobra.Command {
 	var cmd = &cobra.Command{
@@ -31,6 +32,12 @@ func rootCmd() *cobra.Command {
 				initChatClient()
 			}
 
+			cfg, err := ac.NewConfig()
+			if err != nil {
+				cmd.PrintErrf("failed to create config: %s", err)
+			}
+			acCfg = cfg
+
 		},
 		Example: heredoc.Doc(`
 
@@ -41,9 +48,6 @@ func rootCmd() *cobra.Command {
 	cmd.DisableAutoGenTag = true
 
 	cmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose output")
-	if _, err := ac.LoadConfig(); err != nil {
-		cmd.PrintErrf("Error loading config: %v\n", err)
-	}
 
 	cmd.AddCommand(appsCmd())
 	cmd.AddCommand(docCmd())

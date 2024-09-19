@@ -12,6 +12,8 @@ import (
 	"github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src/accesstoken2"
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
+
+	auth "github.com/ycj3/agora-chat-cli/agora-chat/auth"
 )
 
 // tokenCmd represents the token command
@@ -64,8 +66,15 @@ var tokenCmd = &cobra.Command{
 			cmd.Printf("Decoded Payload:\n%s\n", tokenInfo)
 		}
 
+		app, err := acCfg.GetActiveApp()
+		if app == nil {
+			return fmt.Errorf("failed to get active app: %s", err)
+		}
+
+		at, err := auth.NewAuth(app.AppID, app.AppCertificate, app.AppTokenExp)
+
 		if userID, _ := cmd.Flags().GetString("user"); userID != "" {
-			userToken, err := client.Tokens().GenerateChatUserToken(userID)
+			userToken, err := at.UserTokenFromBuilder(userID)
 			if err != nil {
 				return err
 			}
@@ -73,7 +82,7 @@ var tokenCmd = &cobra.Command{
 		}
 
 		if fApp, _ := cmd.Flags().GetBool("app"); fApp {
-			appToken, err := client.Tokens().GenerateChatAppToken()
+			appToken, err := at.AppTokenFromBuilder()
 			if err != nil {
 				return err
 			}

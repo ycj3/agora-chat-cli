@@ -7,12 +7,12 @@ import (
 	"fmt"
 	"time"
 
+	auth "github.com/ycj3/agora-chat-cli/agora-chat/auth"
 	"github.com/ycj3/agora-chat-cli/http"
 )
 
 //go:generate go run go.uber.org/mock/mockgen -source=client.go -destination=client_mock.go -package=agora_chat
 type Client interface {
-	Tokens() *TokenManager
 	User() *UserManager
 	Push() *PushManager
 	Provider() *ProviderManager
@@ -23,7 +23,6 @@ type Client interface {
 type client struct {
 	appConfig      *App
 	appToken       string
-	appTokenExp    uint32
 	messageClient  http.Client[messageResponseResult]
 	userClient     http.Client[userResponseResult]
 	pushClient     http.Client[PushResponseResult]
@@ -32,10 +31,14 @@ type client struct {
 }
 
 func NewClient() (Client, error) {
+	cfg, err := NewConfig()
+	if err != nil {
+		return nil, fmt.Errorf("failed to create config: %s", err)
+	}
 
-	app, err := GetActiveApp()
+	app, err := cfg.GetActiveApp()
 	if app == nil {
-		return nil, fmt.Errorf("Failed to get active app: %w", err)
+		return nil, fmt.Errorf("failed to get active app: %s", err)
 	}
 
 	client := &client{
@@ -45,18 +48,21 @@ func NewClient() (Client, error) {
 		pushClient:     http.NewClient[PushResponseResult](),
 		providerClient: http.NewClient[PrividerResponseResult](),
 		deviceClient:   http.NewClient[deviceResponseResult](),
-		appTokenExp:    uint32(time.Hour.Seconds() * 24),
 	}
-	appToken, err := client.Tokens().GenerateChatAppToken()
+
+	expire := uint32(time.Hour.Seconds() * 24)
+	at, err := auth.NewAuth(app.AppID, app.AppCertificate, expire)
+
 	if err != nil {
-		return nil, fmt.Errorf("Failed to generate app token")
+		return nil, fmt.Errorf("failed to auth: %s", err)
+	}
+
+	appToken, err := at.TokenFromEnvOrBuilder()
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate app token: %s", err)
 	}
 	client.appToken = appToken
 	return client, nil
-}
-
-func (c *client) Tokens() *TokenManager {
-	return &TokenManager{c}
 }
 
 func (c *client) User() *UserManager {
