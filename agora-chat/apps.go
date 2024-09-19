@@ -35,6 +35,9 @@ func (apps *Apps) Add(newApp App) error {
 		if newApp.AppID == app.AppID {
 			return fmt.Errorf("[%s]Application already exists", newApp.AppID)
 		}
+		if newApp.Name == app.Name {
+			return fmt.Errorf("[%s]Application already exists", newApp.Name)
+		}
 	}
 
 	apps.Apps = append(apps.Apps, newApp)
@@ -50,33 +53,46 @@ func (apps *Apps) ListAllApps() error {
 	t.AddHeader("", "App Name", "App ID", "App Certificate", "BaseURL")
 	for _, app := range apps.Apps {
 		def := ""
-		if app.AppID == apps.Active {
+
+		if app.Name == apps.Active {
 			def = "(active)"
 		}
-		appCertificate := fmt.Sprintf("**************%v", app.AppCertificate[len(app.AppCertificate)-4:])
-		t.AddLine(def, app.Name, app.AppID, appCertificate, app.BaseURL)
+
+		appID := app.AppID
+		if appID == "" {
+			appID = "--"
+		}
+
+		appCert := app.AppCertificate
+		if appCert == "" {
+			appCert = "--"
+		} else {
+			appCert = fmt.Sprintf("**************%v", app.AppCertificate[len(app.AppCertificate)-4:])
+		}
+
+		t.AddLine(def, app.Name, appID, appCert, app.BaseURL)
 	}
 	t.Print()
 	return nil
 }
 
-func (apps *Apps) Remove(appID string) error {
+func (apps *Apps) Remove(appName string) error {
 	var (
 		idx   int
 		found bool
 	)
 	for i, app := range apps.Apps {
-		if appID == app.AppID {
+		if appName == app.Name {
 			found = true
 			idx = i
 			break
 		}
 	}
 	if !found {
-		return fmt.Errorf("[%s]Application doesn't exist", appID)
+		return fmt.Errorf("[%s]Application doesn't exist", appName)
 	}
 
-	if apps.Active == appID {
+	if apps.Active == appName {
 		apps.Active = ""
 	}
 
@@ -87,25 +103,24 @@ func (apps *Apps) Remove(appID string) error {
 	return viper.WriteConfig()
 }
 
-func (apps *Apps) Use(appID string) error {
-	if apps.Active == appID {
+func (apps *Apps) Use(appName string) error {
+	if apps.Active == appName {
 		// if already active, early return
 		return nil
 	}
 
 	var found bool
 	for _, app := range apps.Apps {
-		if appID == app.AppID {
+		if appName == app.Name {
 			found = true
 			break
 		}
 	}
 	if !found {
-		return fmt.Errorf("[%s]Application doesn't exist", appID)
+		return fmt.Errorf("[%s]Application doesn't exist", appName)
 	}
-	apps.Active = appID
+	apps.Active = appName
 	viper.Set("active", apps.Active)
-	fmt.Println("Application successfully used as the currently 'active app' ")
 	return viper.WriteConfig()
 }
 
