@@ -8,6 +8,7 @@ import (
 	"github.com/spf13/cobra"
 	ac "github.com/ycj3/agora-chat-cli/agora-chat"
 	auth "github.com/ycj3/agora-chat-cli/agora-chat/auth"
+	"github.com/ycj3/agora-chat-cli/cmdutil"
 )
 
 type createOption struct {
@@ -24,7 +25,7 @@ type useOption struct {
 	AppName string
 }
 
-func appsCmd() *cobra.Command {
+func appCmd() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "app",
 		Short: "Manage chat applications",
@@ -34,6 +35,8 @@ func appsCmd() *cobra.Command {
 	cmd.AddCommand(listCmd())
 	cmd.AddCommand(removeCmd())
 	cmd.AddCommand(useCmd())
+
+	cmdutil.DisableAuthCheck(cmd)
 
 	return cmd
 }
@@ -144,6 +147,7 @@ func createCmd() *cobra.Command {
 			return apps.RunQuestionnaire()
 		},
 	}
+
 	fl := cmd.Flags()
 	fl.StringVarP(&opts.AppName, "name", "n", "", "Name for the application")
 	fl.BoolVarP(&opts.WithEnvToken, "env-token", "e", false, "Create an application with the env token")

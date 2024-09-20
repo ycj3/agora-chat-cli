@@ -9,6 +9,7 @@ import (
 
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
+	"github.com/ycj3/agora-chat-cli/cmdutil"
 
 	firebase "firebase.google.com/go"
 	"firebase.google.com/go/messaging"
@@ -91,6 +92,7 @@ func InitializeFirebase(keyPath string) *firebase.App {
 
 func init() {
 	fcmCmd.AddCommand(testFCMPushCmd)
+	cmdutil.DisableAuthCheck(fcmCmd)
 
 	testFCMPushCmd.Flags().StringP("token", "t", "", "The device's registration token")
 	testFCMPushCmd.Flags().StringP("key", "k", "", "The service account JSON file")
