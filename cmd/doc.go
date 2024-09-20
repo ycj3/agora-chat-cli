@@ -9,6 +9,7 @@ import (
 
 	"github.com/spf13/cobra"
 	"github.com/spf13/cobra/doc"
+	"github.com/ycj3/agora-chat-cli/cmdutil"
 )
 
 // docCmd represents the doc command
@@ -31,5 +32,8 @@ func docCmd() *cobra.Command {
 			}
 		},
 	}
+
+	cmdutil.DisableAuthCheck(cmd)
+
 	return cmd
 }

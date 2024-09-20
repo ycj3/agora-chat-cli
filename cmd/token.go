@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+	"time"
 
 	"github.com/AgoraIO/Tools/DynamicKey/AgoraDynamicKey/go/src/accesstoken2"
 	"github.com/MakeNowJust/heredoc"
@@ -70,8 +71,8 @@ var tokenCmd = &cobra.Command{
 		if app == nil {
 			return fmt.Errorf("failed to get active app: %s", err)
 		}
-
-		at, err := auth.NewAuth(app.AppID, app.AppCertificate, app.AppTokenExp)
+		expire := uint32(time.Hour.Seconds() * 24)
+		at, _ := auth.NewAuth(app.AppID, app.AppCertificate, expire)
 
 		if userID, _ := cmd.Flags().GetString("user"); userID != "" {
 			userToken, err := at.UserTokenFromBuilder(userID)
