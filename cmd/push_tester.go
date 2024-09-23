@@ -44,14 +44,18 @@ var testPushCmd = &cobra.Command{
 		// Step 1: check if you have registered the push notification credentials with the Agora Chat Server.
 		err := checkPushCredential()
 		if err != nil {
-			logger.Error(fmt.Sprintf("Failed to check push notification credentials: %s", err), nil)
+			logger.Error("Failed to check push notification credentials", map[string]interface{}{
+				"error": err.Error(),
+			})
 			return nil
 		}
 
 		// Step 2: check if you have registered a device token with the Agora Chat Server for the target user.
 		err = checkPushDeviceToken(userID)
 		if err != nil {
-			logger.Error(fmt.Sprintf("Failed to check device token(s): %s", err), nil)
+			logger.Error("Failed to check device token(s)", map[string]interface{}{
+				"error": err.Error(),
+			})
 			return nil
 		}
 
@@ -85,11 +89,15 @@ func checkPushDeviceToken(userID string) error {
 	if err != nil {
 		return fmt.Errorf("filed to list push devices: %w", err)
 	}
+
 	if len(devices) == 0 {
-		return fmt.Errorf("no devices registered for uid: %s", userID)
+		return fmt.Errorf("no device tokens registered for uid: %s", userID)
 	}
+
 	if len(devices) > 1 {
-		logger.Info(fmt.Sprintf("%d device token(s) registered for uid: %s", len(devices), userID), nil)
+		logger.Info(fmt.Sprintf("%d device token(s) registered", len(devices)), map[string]interface{}{
+			"uid": userID,
+		})
 	}
 	return nil
 }
@@ -109,9 +117,8 @@ func handlePushTestResponse(res ac.PushResponseResult) error {
 	for _, dataItem := range res.Data {
 		if dataItem.PushStatus == "SUCCESS" {
 			if dataItem.Data.Name != "" {
-				logger.Info(fmt.Sprintf("%sMessage sent successfully", dot), map[string]interface{}{
-					"message-id":    dataItem.Data.Name,
-					"push-provider": "FCM",
+				logger.Info(fmt.Sprintf("%sMessage sent successfully via FCM", dot), map[string]interface{}{
+					"message-id": dataItem.Data.Name,
 				})
 			}
 		}
@@ -120,10 +127,10 @@ func handlePushTestResponse(res ac.PushResponseResult) error {
 	for _, dataItem := range res.Data {
 		if dataItem.PushStatus == "FAIL" {
 			if dataItem.Data.FcmError != nil {
-				logger.Error(fmt.Sprintf("%sFailed to send message: %s", dot, dataItem.Data.FcmError.Message), map[string]interface{}{
-					"code":          dataItem.Data.FcmError.Code,
-					"errorCode":     dataItem.Data.FcmError.Details[0].ErrorCode,
-					"push-provider": "FCM",
+				logger.Error(fmt.Sprintf("%sFailed to send message via FCM: %s", dot, dataItem.Data.FcmError.Message), map[string]interface{}{
+					"code":      dataItem.Data.FcmError.Code,
+					"errorCode": dataItem.Data.FcmError.Details[0].ErrorCode,
+					"status":    dataItem.Data.FcmError.Status,
 				})
 			} else if dataItem.Desc != "" {
 				logger.Error(fmt.Sprintf("%sFailed to send message: %s", dot, dataItem.Desc), nil)
