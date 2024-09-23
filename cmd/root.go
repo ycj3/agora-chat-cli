@@ -30,7 +30,6 @@ func rootCmd() *cobra.Command {
 		PersistentPreRun: func(cmd *cobra.Command, args []string) {
 			logger = log.NewLogger(verbose)
 			if cmdutil.IsAuthCheckEnabled(cmd) {
-				println(cmd.Use)
 				initChatClient()
 			}
 			cfg, err := ac.NewConfig()

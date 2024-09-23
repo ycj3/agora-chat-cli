@@ -13,12 +13,34 @@ type PushManager struct {
 	client *client
 }
 
-type PushResult struct {
-	PushStatus string                 `json:"pushStatus"`
-	Data       map[string]interface{} `json:"data,omitempty"` // contains the response from the provider you are useing (e.g. FCM or APNs)
-	Desc       string                 `json:"desc,omitempty"`
-	StatusCode int                    `json:"statusCode,omitempty"`
+type fcmErrorResponse struct {
+	Code    int    `json:"code"`
+	Status  string `json:"status"`
+	Message string `json:"message"`
+	Details []struct {
+		ErrorCode string `json:"errorCode"`
+	}
 }
+type fcmResponse struct {
+	Name string `json:"name,omitempty"`
+}
+
+type FcmData struct {
+	fcmResponse
+	FcmError *fcmErrorResponse `json:"error,omitempty"`
+}
+
+type PushResultData struct {
+	FcmData
+}
+
+type PushResult struct {
+	PushStatus string         `json:"pushStatus"`
+	Data       PushResultData `json:"data,omitempty"` // contains the response from the provider you are useing (e.g. FCM or APNs)
+	Desc       string         `json:"desc,omitempty"`
+	StatusCode int            `json:"statusCode,omitempty"`
+}
+
 type PushResponseResult struct {
 	Response
 	Data []PushResult `json:"data"`

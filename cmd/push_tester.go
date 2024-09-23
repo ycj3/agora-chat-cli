@@ -10,7 +10,6 @@ import (
 	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 	ac "github.com/ycj3/agora-chat-cli/agora-chat"
-	"github.com/ycj3/agora-chat-cli/util"
 )
 
 var pushCmd = &cobra.Command{
@@ -43,105 +42,94 @@ var testPushCmd = &cobra.Command{
 		}
 
 		// Step 1: check if you have registered the push notification credentials with the Agora Chat Server.
-		err := checkPushCredential(cmd, args)
+		err := checkPushCredential()
 		if err != nil {
-			logger.Error("✖ Step 1: Failed to check the push notification credentials", map[string]interface{}{
-				"error":   err.Error(),
-				"success": false,
-			})
+			logger.Error(fmt.Sprintf("Failed to check push notification credentials: %s", err), nil)
 			return nil
 		}
 
 		// Step 2: check if you have registered a device token with the Agora Chat Server for the target user.
-		err = checkPushDeviceToken(userID, cmd, args)
+		err = checkPushDeviceToken(userID)
 		if err != nil {
-			logger.Error("✖ Step 2: Failed to check the push device tokens", map[string]interface{}{
-				"error":   err.Error(),
-				"success": false,
-			})
+			logger.Error(fmt.Sprintf("Failed to check device token(s): %s", err), nil)
 			return nil
 		}
 
 		// Step 3: Send push notification
-		res, err := client.Push().SyncPush(userID, ac.OnlyPushPrivider, msg)
+		res, _ := client.Push().SyncPush(userID, ac.OnlyPushPrivider, msg)
 
 		err = handlePushTestResponse(res)
 		if err != nil {
-			return nil
+			return err
 		}
-		logger.Info("Push notification test completed.", nil)
 		return nil
 
 	},
 }
 
 // Step 1
-func checkPushCredential(cmd *cobra.Command, args []string) error {
+func checkPushCredential() error {
 	res, err := client.Provider().ListPushProviders()
 	if err != nil {
-		return fmt.Errorf("Failed to list providers: %w", err)
+		return fmt.Errorf("failed to list providers: %w", err)
 	}
 	if len(res.Entities) == 0 {
-		return fmt.Errorf("No push notification credentials registered with the Agora Chat Server.")
+		return fmt.Errorf("no push notification credentials found in the current active app")
 	}
-	logger.Info("✔ Step 1: Checked the push notification credentials registered with the Agora Chat Server", map[string]interface{}{
-		"count": len(res.Entities),
-	})
 	return nil
 }
 
 // Step 2
-func checkPushDeviceToken(userID string, cmd *cobra.Command, args []string) error {
+func checkPushDeviceToken(userID string) error {
 	devices, err := client.Device().ListPushDevice(userID)
 	if err != nil {
-		return fmt.Errorf("Failed to list push devices: %w", err)
+		return fmt.Errorf("filed to list push devices: %w", err)
 	}
 	if len(devices) == 0 {
-		return fmt.Errorf("No Devices registered with the Agora Chat Server.")
+		return fmt.Errorf("no devices registered for uid: %s", userID)
 	}
-	logger.Info("✔ Step 2: Checked the push device tokens registered with the Agora Chat Server", map[string]interface{}{
-		"count": len(devices),
-	})
+	if len(devices) > 1 {
+		logger.Info(fmt.Sprintf("%d device token(s) registered for uid: %s", len(devices), userID), nil)
+	}
 	return nil
 }
 
 // Step 3
+
 func handlePushTestResponse(res ac.PushResponseResult) error {
 
-	// First, handle all success entries
-	var succssEntries []ac.PushResult
+	// var succssEntries []ac.PushResult
+	var dot string
+	if len(res.Data) > 1 {
+		dot = " - "
+	} else {
+		dot = ""
+	}
+
 	for _, dataItem := range res.Data {
 		if dataItem.PushStatus == "SUCCESS" {
-			succssEntries = append(succssEntries, dataItem)
+			if dataItem.Data.Name != "" {
+				logger.Info(fmt.Sprintf("%sMessage sent successfully", dot), map[string]interface{}{
+					"message-id":    dataItem.Data.Name,
+					"push-provider": "FCM",
+				})
+			}
 		}
 	}
 
-	// Then, handle all failure entries
-	var failuresEntries []ac.PushResult
 	for _, dataItem := range res.Data {
 		if dataItem.PushStatus == "FAIL" {
-			failuresEntries = append(failuresEntries, dataItem)
-		}
-	}
+			if dataItem.Data.FcmError != nil {
+				logger.Error(fmt.Sprintf("%sFailed to send message: %s", dot, dataItem.Data.FcmError.Message), map[string]interface{}{
+					"code":          dataItem.Data.FcmError.Code,
+					"errorCode":     dataItem.Data.FcmError.Details[0].ErrorCode,
+					"push-provider": "FCM",
+				})
+			} else if dataItem.Desc != "" {
+				logger.Error(fmt.Sprintf("%sFailed to send message: %s", dot, dataItem.Desc), nil)
+			}
 
-	if len(succssEntries) > 0 {
-		logger.Info("✔ Step 3: Sent push notification to device(s)", map[string]interface{}{
-			"totalCount": len(res.Data),
-		})
-		logger.Info("Success result(s)", map[string]interface{}{
-			"count": len(succssEntries),
-		})
-		util.Print(succssEntries, util.OutputFormatJSON, nil)
-		logger.Info("Failure result(s)", map[string]interface{}{
-			"count": len(failuresEntries),
-		})
-		util.Print(failuresEntries, util.OutputFormatJSON, nil)
-	} else {
-		logger.Error("✖ Step 3: Failed to send push notification to device(s)", map[string]interface{}{
-			"count": len(failuresEntries),
-		})
-		util.Print(failuresEntries, util.OutputFormatJSON, nil)
-		return fmt.Errorf("")
+		}
 	}
 
 	toubleshootingMsg := "For more details, please refer to the response code documentation for the provider you are using: \n" +
