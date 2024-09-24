@@ -5,6 +5,7 @@ package agora_chat
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/ycj3/agora-chat-cli/http"
 )
@@ -13,12 +14,53 @@ type PushManager struct {
 	client *client
 }
 
-type PushResult struct {
-	PushStatus string                 `json:"pushStatus"`
-	Data       map[string]interface{} `json:"data,omitempty"` // contains the response from the provider you are useing (e.g. FCM or APNs)
-	Desc       string                 `json:"desc,omitempty"`
-	StatusCode int                    `json:"statusCode,omitempty"`
+type fcmErrorResponse struct {
+	Code    int    `json:"code"`
+	Status  string `json:"status"`
+	Message string `json:"message"`
+	Details []struct {
+		ErrorCode string `json:"errorCode"`
+	}
 }
+type fcmResponse struct {
+	Name string `json:"name,omitempty"`
+}
+
+type FcmData struct {
+	fcmResponse
+	FcmError *fcmErrorResponse `json:"error,omitempty"`
+}
+
+type PushNotification struct {
+	Payload    string    `json:"payload"`
+	Topic      string    `json:"topic"`
+	Expiration time.Time `json:"expiration"`
+	Priority   string    `json:"priority"`
+	Token      string    `json:"token"`
+}
+
+type apnsResponse struct {
+	TokenInvalidationTimestamp interface{}      `json:"tokenInvalidationTimestamp"`
+	ApnsUniqueId               string           `json:"apnsUniqueId"`
+	Accepted                   bool             `json:"accepted"`
+	ApnsId                     string           `json:"apnsId"`
+	RejectionReason            interface{}      `json:"rejectionReason"`
+	PushNotification           PushNotification `json:"pushNotification"`
+	StatusCode                 int              `json:"statusCode"`
+}
+
+type PushResultData struct {
+	FcmData
+	apnsResponse
+}
+
+type PushResult struct {
+	PushStatus string         `json:"pushStatus"`
+	Data       PushResultData `json:"data,omitempty"` // contains the response from the provider you are useing (e.g. FCM or APNs)
+	Desc       string         `json:"desc,omitempty"`
+	StatusCode int            `json:"statusCode,omitempty"`
+}
+
 type PushResponseResult struct {
 	Response
 	Data []PushResult `json:"data"`
