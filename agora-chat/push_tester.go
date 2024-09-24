@@ -5,6 +5,7 @@ package agora_chat
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/ycj3/agora-chat-cli/http"
 )
@@ -30,8 +31,27 @@ type FcmData struct {
 	FcmError *fcmErrorResponse `json:"error,omitempty"`
 }
 
+type PushNotification struct {
+	Payload    string    `json:"payload"`
+	Topic      string    `json:"topic"`
+	Expiration time.Time `json:"expiration"`
+	Priority   string    `json:"priority"`
+	Token      string    `json:"token"`
+}
+
+type apnsResponse struct {
+	TokenInvalidationTimestamp interface{}      `json:"tokenInvalidationTimestamp"`
+	ApnsUniqueId               string           `json:"apnsUniqueId"`
+	Accepted                   bool             `json:"accepted"`
+	ApnsId                     string           `json:"apnsId"`
+	RejectionReason            interface{}      `json:"rejectionReason"`
+	PushNotification           PushNotification `json:"pushNotification"`
+	StatusCode                 int              `json:"statusCode"`
+}
+
 type PushResultData struct {
 	FcmData
+	apnsResponse
 }
 
 type PushResult struct {

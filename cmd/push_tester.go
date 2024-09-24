@@ -120,6 +120,12 @@ func handlePushTestResponse(res ac.PushResponseResult) error {
 				logger.Info(fmt.Sprintf("%sMessage sent successfully via FCM", dot), map[string]interface{}{
 					"message-id": dataItem.Data.Name,
 				})
+			} else if dataItem.Data.StatusCode == 200 && dataItem.Data.ApnsUniqueId != "" && dataItem.Data.Accepted {
+				logger.Info(fmt.Sprintf("%sMessage sent successfully via APNs", dot), map[string]interface{}{
+					"apnsUniqueId": dataItem.Data.ApnsUniqueId,
+				})
+			} else {
+				return fmt.Errorf("unknow success type for push")
 			}
 		}
 	}
@@ -132,8 +138,16 @@ func handlePushTestResponse(res ac.PushResponseResult) error {
 					"errorCode": dataItem.Data.FcmError.Details[0].ErrorCode,
 					"status":    dataItem.Data.FcmError.Status,
 				})
+			} else if dataItem.Data.StatusCode != 200 && dataItem.Data.ApnsUniqueId == "" && !dataItem.Data.Accepted {
+				logger.Error(fmt.Sprintf("%sFailed to send message via APNs: %s", dot, dataItem.Data.RejectionReason), map[string]interface{}{
+					"statusCode": dataItem.Data.StatusCode,
+					"apnsId":     dataItem.Data.ApnsId,
+					"token":      dataItem.Data.PushNotification.Token,
+				})
 			} else if dataItem.Desc != "" {
 				logger.Error(fmt.Sprintf("%sFailed to send message: %s", dot, dataItem.Desc), nil)
+			} else {
+				return fmt.Errorf("unknow failure type for push")
 			}
 
 		}
