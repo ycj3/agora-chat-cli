@@ -54,7 +54,6 @@ var _ = Describe("PushManager", func() {
 					Data: []PushResult{
 						{
 							PushStatus: "Success",
-							Data:       map[string]interface{}{"provider": "FCM"},
 							Desc:       "Push sent successfully",
 							StatusCode: gohttp.StatusOK,
 						},
