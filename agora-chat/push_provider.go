@@ -23,12 +23,15 @@ type PrividerResponseResult struct {
 type APNSConfig struct {
 	TeamId string `json:"teamId"`
 	KeyId  string `json:"keyId"`
+	Sound  string `json:"sound"`
 }
 type FCMConfig struct {
-	PushType  string `json:"pushType"`
-	Priority  string `json:"priority"`
-	ProjectId string `json:"projectId"`
-	Version   string `json:"version"`
+	PushType    string `json:"pushType"`
+	Priority    string `json:"priority"`
+	ProjectId   string `json:"projectId"`
+	Version     string `json:"version"`
+	SupportAPNs bool   `json:"supportAPNs"`
+	Sound       string `json:"sound"`
 }
 type HuaweiConfig struct {
 	Category      string `json:"category"`
@@ -70,12 +73,14 @@ const (
 type EnvironmentType = string
 
 type PushProvider struct {
-	UUID     string           `json:"uuid,omitempty"`
-	Type     PushProviderType `json:"provider"`
+	UUID string `json:"uuid,omitempty"`
+	Type string `json:"type"`
+
 	Name     string           `json:"name"`
 	Created  int64            `json:"created,omitempty"`
 	Modified int64            `json:"modified,omitempty"`
-	Disabled bool             `json:"disabled,omitempty"`
+	Disabled bool             `json:"disabled"`
+	Provider PushProviderType `json:"provider"`
 
 	Env         EnvironmentType `json:"environment,omitempty"`
 	PackageName string          `json:"packageName,omitempty"`
