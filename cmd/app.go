@@ -124,6 +124,9 @@ func createCmd() *cobra.Command {
 	var cmd = &cobra.Command{
 		Use:   "create",
 		Short: "Create an chat application using details from the Agora console",
+		Example: heredoc.Doc(`
+				$ agchat app create --env-token --name <application-name> --url <application-base-url>
+		`),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			apps, err := acCfg.GetApps()
 			if err != nil {
