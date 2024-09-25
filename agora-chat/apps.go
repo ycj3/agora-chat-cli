@@ -10,6 +10,7 @@ import (
 	"github.com/AlecAivazis/survey/v2"
 	"github.com/cheynewallace/tabby"
 	"github.com/spf13/viper"
+	auth "github.com/ycj3/agora-chat-cli/agora-chat/auth"
 )
 
 func (apps *Apps) RunQuestionnaire() error {
@@ -32,11 +33,13 @@ func (apps *Apps) Add(newApp App) error {
 	}
 
 	for _, app := range apps.Apps {
-		if newApp.AppID == app.AppID {
-			return fmt.Errorf("[%s]Application already exists", newApp.AppID)
-		}
 		if newApp.Name == app.Name {
-			return fmt.Errorf("[%s]Application already exists", newApp.Name)
+			return fmt.Errorf("[%s]Application name already exists", newApp.Name)
+		}
+		if !auth.HasEnvToken() {
+			if newApp.AppID == app.AppID {
+				return fmt.Errorf("[%s]Application appID already exists", newApp.AppID)
+			}
 		}
 	}
 
