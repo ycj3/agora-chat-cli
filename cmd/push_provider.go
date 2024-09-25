@@ -8,6 +8,7 @@ import (
 
 	"github.com/spf13/cobra"
 	ac "github.com/ycj3/agora-chat-cli/agora-chat"
+	"github.com/ycj3/agora-chat-cli/util"
 )
 
 var providerCmd = &cobra.Command{
@@ -28,10 +29,7 @@ var listProvidersCmd = &cobra.Command{
 			fmt.Println("no provider added")
 			return nil
 		}
-		logger.Info("", map[string]interface{}{
-			"count":    len(res.Entities),
-			"provides": res.Entities,
-		})
+		util.Print(res.Entities, util.OutputFormatJSON, nil)
 		return nil
 	},
 }
