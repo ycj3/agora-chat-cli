@@ -38,17 +38,21 @@ func NewAuth(appID, appCertificate string, appTokenExp uint32) (*builder, error)
 }
 
 func (t *builder) TokenFromEnvOrBuilder() (string, error) {
-	if token := TokenFromEnv(); token != "" {
+	var token string
+	var err error
+
+	if t.AppID != "" && t.AppCertificate != "" {
+		token, err = t.AppTokenFromBuilder()
+		if err != nil {
+			return "", fmt.Errorf("failed to generate app token :%s", err)
+		}
 		return token, nil
+	} else {
+		if token = TokenFromEnv(); token != "" {
+			return token, nil
+		}
+		return "", fmt.Errorf("no auth token")
 	}
-
-	token, err := t.AppTokenFromBuilder()
-
-	if err != nil {
-		return "", fmt.Errorf("failed to generate app token :%s", err)
-	}
-
-	return token, nil
 }
 
 func TokenFromEnv() string {
