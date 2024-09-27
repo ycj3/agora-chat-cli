@@ -117,7 +117,7 @@ type upsertOption struct {
 	Sound       string
 
 	CertificateFilePath string
-
+	CertificatePassword string
 	// *** FCM ***
 	// push message type
 	IsBoth         bool
@@ -142,6 +142,8 @@ func upsertFcmCmd() *cobra.Command {
 		Use:   "upsert",
 		Short: "Inserts a push provider if it doesn't exist, or updates the existing push provider if it does",
 		Example: heredoc.Doc(`
+				# Insert a APNs (P12) push provider
+				$ agchat push provider upsert --apns --name <certificate-name> --package-name <bundle-id> --dev-env --file <apns-p12-file> --password <password>
 
 				# Insert a APNs (P8) push provider
 				$ agchat push provider upsert --apns --name <certificate-name> --package-name <bundle-id> --dev-env --key-id <key-id> --team-id <team-id> --file <apns-p8-file>
@@ -212,13 +214,13 @@ func upsertFcmCmd() *cobra.Command {
 					Provider:    ac.PushProviderAPNS,
 					Env:         env,
 					File:        opts.CertificateFilePath,
+					Passphrase:  opts.CertificatePassword,
 					ApnsPushSettings: &ac.APNSConfig{
 						TeamId: opts.TeamID,
 						KeyId:  opts.KeyID,
 						Sound:  opts.Sound,
 					},
 				}
-
 			} else if opts.IsHuawei {
 				return fmt.Errorf("not support yet for Huawei")
 			} else {
@@ -252,6 +254,7 @@ func upsertFcmCmd() *cobra.Command {
 	fl.StringVarP(&opts.Sound, "sound", "s", "default", "Sound")
 
 	fl.StringVarP(&opts.CertificateFilePath, "file", "f", "", "Path of the certificate file")
+	fl.StringVarP(&opts.CertificatePassword, "password", "P", "", "Passwrod of the certificate file")
 
 	fl.StringVarP(&opts.NotifierId, "notifier-id", "N", "", "Same as UUID for the push provider")
 

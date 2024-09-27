@@ -103,6 +103,7 @@ type PushProvider struct {
 	PackageName string          `json:"packageName,omitempty"`
 	Certificate string          `json:"certificate,omitempty"`
 	File        string          `json:"file,omitempty"`
+	Passphrase  string          `json:"passphrase,omitempty"`
 
 	ApnsPushSettings   *APNSConfig   `json:"apnsPushSettings,omitempty"`
 	FcmPushSettings    *FCMConfig    `json:"googlePushSettings,omitempty"`
@@ -157,6 +158,7 @@ func (pp *ProviderManager) upsertPushProvidersRequest(p PushProvider) (http.Requ
 		content["teamId"] = p.ApnsPushSettings.TeamId
 		content["keyId"] = p.ApnsPushSettings.KeyId
 		content["sound"] = p.ApnsPushSettings.Sound
+		content["passphrase"] = p.Passphrase
 		files := map[string]string{
 			"file": p.File,
 		}
