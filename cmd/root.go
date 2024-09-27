@@ -59,6 +59,7 @@ func rootCmd() *cobra.Command {
 	cmd.AddCommand(tokenCmd)
 	cmd.AddCommand(fcmCmd)
 	cmd.AddCommand(messageCmd())
+	cmd.AddCommand(groupCmd())
 
 	cmdutil.DisableAuthCheck(cmd)
 
