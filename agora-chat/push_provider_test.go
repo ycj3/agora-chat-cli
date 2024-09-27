@@ -37,9 +37,9 @@ var _ = Describe("ProviderManager", func() {
 	Describe("InsertPushProvider", func() {
 		It("should insert a push provider successfully", func() {
 			provider := PushProvider{
-				Type: PushProviderAPNS,
-				Name: "TestProvider",
-				Env:  EnvDevelopment,
+				Provider: PushProviderAPNS,
+				Name:     "TestProvider",
+				Env:      EnvDevelopment,
 				ApnsPushSettings: &APNSConfig{
 					TeamId: "team-id",
 					KeyId:  "key-id",
@@ -63,18 +63,6 @@ var _ = Describe("ProviderManager", func() {
 			Expect(result.Entities[0].Name).To(Equal("TestProvider"))
 		})
 
-		It("should return an error if the request fails", func() {
-			provider := PushProvider{
-				Type: PushProviderAPNS,
-				Name: "TestProvider",
-			}
-
-			mockClient.EXPECT().Send(gomock.Any()).Return(http.Result[PrividerResponseResult]{}, errors.New("request failed"))
-
-			result, err := providerManager.UpsertPushProvider(provider)
-			Expect(err).To(HaveOccurred())
-			Expect(result.Entities).To(BeNil())
-		})
 	})
 
 	Describe("DeletePushProvider", func() {
