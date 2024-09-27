@@ -57,7 +57,7 @@ var _ = Describe("ProviderManager", func() {
 
 			mockClient.EXPECT().Send(gomock.Any()).Return(mockResponse, nil)
 
-			result, err := providerManager.InsertPushProvider(provider)
+			result, err := providerManager.UpsertPushProvider(provider)
 			Expect(err).ToNot(HaveOccurred())
 			Expect(result.Entities).To(HaveLen(1))
 			Expect(result.Entities[0].Name).To(Equal("TestProvider"))
@@ -71,7 +71,7 @@ var _ = Describe("ProviderManager", func() {
 
 			mockClient.EXPECT().Send(gomock.Any()).Return(http.Result[PrividerResponseResult]{}, errors.New("request failed"))
 
-			result, err := providerManager.InsertPushProvider(provider)
+			result, err := providerManager.UpsertPushProvider(provider)
 			Expect(err).To(HaveOccurred())
 			Expect(result.Entities).To(BeNil())
 		})

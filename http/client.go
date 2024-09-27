@@ -50,41 +50,51 @@ func NewClient[R interface{}]() Client[R] {
 
 func (c *client[R]) Send(req Request) (Result[R], error) {
 	var (
-		data []byte
-		err  error
+		data        []byte
+		contentType string
+		err         error
 	)
 
 	if req.Payload != nil {
-		data, err = req.Payload.data()
+		// Get both the payload data and the content-type
+		data, contentType, err = req.Payload.data()
 		if err != nil {
 			return Result[R]{}, fmt.Errorf("failed to get payload data: %w", err)
 		}
 	}
 
+	// Create the HTTP request
 	request, err := http.NewRequest(req.Method, req.URL, bytes.NewReader(data))
 	if err != nil {
 		return Result[R]{}, fmt.Errorf("failed to create request: %w", err)
 	}
 
+	// Set headers
 	for key, val := range req.Headers {
 		request.Header.Set(key, val)
 	}
 
+	// Set the content-type header if it exists
+	if contentType != "" {
+		request.Header.Set("Content-Type", contentType)
+	}
+
+	// Send the request
 	res, err := c.internalClient.Do(request)
 	if err != nil {
 		return Result[R]{}, fmt.Errorf("request failed: %w", err)
 	}
 	defer res.Body.Close()
 
-	if req.ResponseFormat == ResponseFormatJSON {
+	// Handle the response based on format
+	switch req.ResponseFormat {
+	case ResponseFormatJSON:
 		return c.handleJSONResponse(res)
-	}
-
-	if req.ResponseFormat == ResponseFormatXML {
+	case ResponseFormatXML:
 		return c.handleXMLResponse(res)
+	default:
+		return Result[R]{}, fmt.Errorf("content type is not supported (%s)", req.ResponseFormat)
 	}
-
-	return Result[R]{}, fmt.Errorf("content type is not supported (%s)", req.ResponseFormat)
 }
 
 func (c *client[R]) Do(req *http.Request) (*http.Response, error) {
