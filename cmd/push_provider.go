@@ -69,36 +69,6 @@ func deleteProviderCmd() *cobra.Command {
 	return cmd
 }
 
-// APNS P8
-// var apnsCmd = &cobra.Command{
-// 	Use:   "insert-apns",
-// 	Short: "Insert an APNS push provider",
-// 	RunE: func(cmd *cobra.Command, args []string) error {
-// 		apnsTeamId, _ := cmd.Flags().GetString("team-id")
-// 		apnsKeyId, _ := cmd.Flags().GetString("key-id")
-
-// 		apns := getPushProviderFromCommonFlags(cmd)
-
-// 		apns.Type = ac.PushProviderAPNS
-// 		apns.ApnsPushSettings = &ac.APNSConfig{
-// 			TeamId: apnsTeamId,
-// 			KeyId:  apnsKeyId,
-// 		}
-
-// 		res, err := client.Provider().InsertPushProvider(apns)
-// 		if err != nil {
-// 			logger.Error("failed to send request,", map[string]interface{}{
-// 				"error": err,
-// 			})
-// 			return nil
-// 		}
-// 		logger.Info("Push provider inserted successfully", map[string]interface{}{
-// 			"results": res.Entities,
-// 		})
-// 		return nil
-// 	},
-// }
-
 type upsertOption struct {
 
 	// PushProvide type
@@ -312,24 +282,6 @@ func init() {
 	providerCmd.AddCommand(upsertFcmCmd())
 	providerCmd.AddCommand(deleteProviderCmd())
 
-	// ANPS
-	// providerCmd.AddCommand(apnsCmd)
-	// addCommonFlags(apnsCmd)
-	// Provider-specific flags for APNS
-	// apnsCmd.Flags().String("team-id", "", "team ID")
-	// apnsCmd.MarkFlagRequired("team-id")
-	// apnsCmd.Flags().String("key-id", "", "key ID")
-	// apnsCmd.MarkFlagRequired("key-id")
-
-	//FCM
-	// providerCmd.AddCommand(insertFcmCmd)
-	// addCommonFlags(insertFcmCmd)
-	// // Provider-specific flags for FCM
-	// insertFcmCmd.Flags().String("push-type", "", "push type")
-	// insertFcmCmd.Flags().String("priority", "", "priority")
-	// insertFcmCmd.Flags().String("project-id", "", "project ID")
-	// insertFcmCmd.Flags().String("version", "", "version")
-
 	// providerCmd.AddCommand(huaweiCmd)
 	// addCommonFlags(huaweiCmd)
 	// Provider-specific flags for HUAWEI
@@ -337,26 +289,3 @@ func init() {
 	// huaweiCmd.Flags().String("activityClass", "", "activityClass")
 
 }
-
-// func addCommonFlags(cmd *cobra.Command) {
-// 	cmd.Flags().String("name", "", "Name of the Certificate")
-// 	cmd.Flags().String("env", "", "Environment (e.g., PRODUCTION, DEVELOPMENT)")
-// 	cmd.Flags().String("cert", "", "Certificate path")
-// 	cmd.Flags().String("pkg", "", "Package name")
-// }
-
-// func getPushProviderFromCommonFlags(cmd *cobra.Command) ac.PushProvider {
-// 	name, _ := cmd.Flags().GetString("name")
-// 	env, _ := cmd.Flags().GetString("env")
-
-// 	cert, _ := cmd.Flags().GetString("cert")
-// 	pkg, _ := cmd.Flags().GetString("pkg")
-
-// 	// Create the provider object based on the flags
-// 	return ac.PushProvider{
-// 		Name:        name,
-// 		Env:         env,
-// 		Certificate: cert,
-// 		PackageName: pkg,
-// 	}
-// }
