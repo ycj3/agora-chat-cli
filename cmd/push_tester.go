@@ -37,7 +37,7 @@ var testPushCmd = &cobra.Command{
 		var msg ac.PushMessage
 		if err := json.Unmarshal([]byte(message), &msg); err != nil {
 			logger.Error("failed to parse push message JSON", map[string]interface{}{
-				"error": err,
+				"error": err.Error(),
 			})
 		}
 

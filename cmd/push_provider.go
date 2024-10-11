@@ -199,7 +199,7 @@ func upsertFcmCmd() *cobra.Command {
 			res, err := client.Provider().UpsertPushProvider(provider)
 			if err != nil {
 				logger.Error("failed to upsert push provider request,", map[string]interface{}{
-					"error": err,
+					"error": err.Error(),
 				})
 				return nil
 			}
