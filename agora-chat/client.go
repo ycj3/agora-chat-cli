@@ -19,6 +19,7 @@ type Client interface {
 	Device() *DeviceManager
 	Message() *MessageManager
 	Group() *GroupManager
+	Room() *ChatroomManager
 }
 
 type client struct {
@@ -30,6 +31,7 @@ type client struct {
 	providerClient http.Client[PrividerResponseResult]
 	deviceClient   http.Client[deviceResponseResult]
 	groupClient    http.Client[groupResponseResult]
+	chatroomClient http.Client[chatroomResponseResult]
 }
 
 func NewClient() (Client, error) {
@@ -51,6 +53,7 @@ func NewClient() (Client, error) {
 		providerClient: http.NewClient[PrividerResponseResult](),
 		deviceClient:   http.NewClient[deviceResponseResult](),
 		groupClient:    http.NewClient[groupResponseResult](),
+		chatroomClient: http.NewClient[chatroomResponseResult](),
 	}
 
 	expire := uint32(time.Hour.Seconds() * 24)
@@ -90,4 +93,8 @@ func (c *client) Message() *MessageManager {
 
 func (c *client) Group() *GroupManager {
 	return &GroupManager{c}
+}
+
+func (c *client) Room() *ChatroomManager {
+	return &ChatroomManager{c}
 }
