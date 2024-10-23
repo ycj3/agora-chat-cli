@@ -5,6 +5,7 @@ package agora_chat
 
 import (
 	"fmt"
+	gohttp "net/http"
 	"strings"
 
 	"github.com/ycj3/agora-chat-cli/http"
@@ -36,6 +37,7 @@ type chatroomResponseResult struct {
 	Application     string           `json:"application"`
 	Data            []chatroomDetail `json:"data"`
 	ApplicationName string           `json:"applicationName"`
+	Error
 }
 
 type ChatroomManager struct {
@@ -49,6 +51,15 @@ func (gm *ChatroomManager) GetChatroomDetail(rids []string) (chatroomResponseRes
 	}
 
 	res, err := gm.client.chatroomClient.Send(request)
+
+	statusCode := res.StatusCode
+	if statusCode != gohttp.StatusOK {
+		if statusCode == gohttp.StatusNotFound {
+			return chatroomResponseResult{}, res.Data.Error
+		}
+		return chatroomResponseResult{}, fmt.Errorf("http request failed: %w", res.Data.Error)
+	}
+
 	if err != nil {
 		return chatroomResponseResult{}, fmt.Errorf("request failed: %w", err)
 	}
