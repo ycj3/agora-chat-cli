@@ -6,13 +6,18 @@ package cmd
 import (
 	"strings"
 
+	"github.com/MakeNowJust/heredoc"
 	"github.com/spf13/cobra"
 	"github.com/ycj3/agora-chat-cli/util"
 )
 
+type userDetailOptions struct {
+	uID string
+}
+
 var userCmd = &cobra.Command{
 	Use:   "user",
-	Short: "Manage various attributes and actions of a user",
+	Short: "Manage users",
 }
 
 var onlineStatusCmd = &cobra.Command{
@@ -40,9 +45,35 @@ var onlineStatusCmd = &cobra.Command{
 	},
 }
 
+func userDetailCmd() *cobra.Command {
+	opts := &userDetailOptions{}
+
+	var cmd = &cobra.Command{
+		Use:   "detail",
+		Short: "Get the detailed information of a specific user",
+		Example: heredoc.Doc(`
+				$ agchat user detail --user <user-id>
+		`),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			user, err := client.User().QueryUser(opts.uID)
+			if err != nil {
+				return err
+			}
+			util.OutputJson(user)
+			return nil
+		},
+	}
+
+	fl := cmd.Flags()
+	fl.StringVarP(&opts.uID, "user", "u", "", "ID of the user")
+
+	return cmd
+}
+
 func init() {
 
 	userCmd.AddCommand(onlineStatusCmd)
+	userCmd.AddCommand(userDetailCmd())
 
 	onlineStatusCmd.Flags().StringP("users", "u", "", "Comma-separated list of users to query the online status for")
 	onlineStatusCmd.MarkFlagRequired("users")
