@@ -105,3 +105,67 @@ func (um *UserManager) queryUserURL(uID string) string {
 	baseURL := um.client.appConfig.BaseURL
 	return fmt.Sprintf(baseURL+"/users/%s", uID)
 }
+
+func (um *UserManager) CreateUser(uID string, pwd string) (User, error) {
+	request := um.createUserRequest(uID, pwd)
+	res, err := um.client.userClient.Send(request)
+	if err != nil {
+		return User{}, fmt.Errorf("request failed: %w", err)
+	}
+	if res.StatusCode != gohttp.StatusOK {
+		return User{}, res.Data.Error
+	}
+	return res.Data.Users[0], nil
+}
+
+func (um *UserManager) createUserRequest(uID string, pwd string) http.Request {
+	return http.Request{
+		URL:            um.createUserURL(),
+		Method:         http.MethodPOST,
+		ResponseFormat: http.ResponseFormatJSON,
+		Headers: map[string]string{
+			"Content-Type":  "application/json",
+			"Authorization": "Bearer " + um.client.appToken,
+		},
+		Payload: &http.JSONPayload{
+			Content: map[string]interface{}{
+				"username": uID,
+				"password": pwd,
+			},
+		},
+	}
+}
+
+func (um *UserManager) createUserURL() string {
+	baseURL := um.client.appConfig.BaseURL
+	return fmt.Sprintf(baseURL + "/users")
+}
+
+func (um *UserManager) DeleteUser(uID string) (User, error) {
+	request := um.deleteUserRequest(uID)
+	res, err := um.client.userClient.Send(request)
+	if err != nil {
+		return User{}, fmt.Errorf("request failed: %w", err)
+	}
+	if res.StatusCode != gohttp.StatusOK {
+		return User{}, res.Data.Error
+	}
+	return res.Data.Users[0], nil
+}
+
+func (um *UserManager) deleteUserRequest(uID string) http.Request {
+	return http.Request{
+		URL:            um.deleteUserURL(uID),
+		Method:         http.MethodDELETE,
+		ResponseFormat: http.ResponseFormatJSON,
+		Headers: map[string]string{
+			"Content-Type":  "application/json",
+			"Authorization": "Bearer " + um.client.appToken,
+		},
+	}
+}
+
+func (um *UserManager) deleteUserURL(uID string) string {
+	baseURL := um.client.appConfig.BaseURL
+	return fmt.Sprintf(baseURL+"/users/%s", uID)
+}

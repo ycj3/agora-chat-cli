@@ -4,6 +4,7 @@ Copyright © 2024 NAME HERE <EMAIL ADDRESS>
 package cmd
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/MakeNowJust/heredoc"
@@ -12,6 +13,15 @@ import (
 )
 
 type userDetailOptions struct {
+	uID string
+}
+
+type userCreateOptions struct {
+	uID string
+	pwd string
+}
+
+type userDeleteOptions struct {
 	uID string
 }
 
@@ -70,10 +80,65 @@ func userDetailCmd() *cobra.Command {
 	return cmd
 }
 
+func userCreateCmd() *cobra.Command {
+	opts := &userCreateOptions{}
+
+	var cmd = &cobra.Command{
+		Use:   "create",
+		Short: "Create a user",
+		Example: heredoc.Doc(`
+				$ agchat user create --user <user-id> --password <password>
+		`),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			user, err := client.User().CreateUser(opts.uID, opts.pwd)
+			if err != nil {
+				return err
+			}
+			logger.Info("Successfully created user", map[string]interface{}{
+				"uuid": user.UUID,
+			})
+			return nil
+		},
+	}
+
+	fl := cmd.Flags()
+	fl.StringVarP(&opts.uID, "user", "u", "", "ID of the user")
+	fl.StringVarP(&opts.pwd, "password", "p", "", "Password of the user")
+
+	return cmd
+}
+
+func userDeleteCmd() *cobra.Command {
+	opts := &userDeleteOptions{}
+
+	var cmd = &cobra.Command{
+		Use:   "delete",
+		Short: "Delete a user",
+		Example: heredoc.Doc(`
+				$ agchat user delete --user <user-id>
+		`),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			user, err := client.User().DeleteUser(opts.uID)
+			if err != nil {
+				return err
+			}
+			logger.Info(fmt.Sprintf("User: %s deleted", user.ID), nil)
+			return nil
+		},
+	}
+
+	fl := cmd.Flags()
+	fl.StringVarP(&opts.uID, "user", "u", "", "ID of the user")
+
+	return cmd
+}
+
 func init() {
 
 	userCmd.AddCommand(onlineStatusCmd)
 	userCmd.AddCommand(userDetailCmd())
+	userCmd.AddCommand(userCreateCmd())
+	userCmd.AddCommand(userDeleteCmd())
 
 	onlineStatusCmd.Flags().StringP("users", "u", "", "Comma-separated list of users to query the online status for")
 	onlineStatusCmd.MarkFlagRequired("users")
